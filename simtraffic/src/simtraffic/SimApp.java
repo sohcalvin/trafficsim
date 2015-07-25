@@ -26,7 +26,7 @@ public class SimApp {
 	 * @throws RunningException
 	 */
 	/**
-	 * @param args
+	 * @param argsj
 	 * @throws InterruptedException
 	 * @throws ConfigurationException
 	 * @throws RunningException
@@ -64,7 +64,7 @@ public class SimApp {
 		System.out.println("Empty route");
 		System.out.println(route);
 		
-		int loops = 15;
+		int loops = 25;
 		for(int i =0 ; i < loops ; i++){
 			ArrayList<Segment> segments =  route.getSegments();
 			int maxIdx = segments.size()-1;

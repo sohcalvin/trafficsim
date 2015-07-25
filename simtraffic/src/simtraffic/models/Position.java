@@ -70,7 +70,12 @@ public class Position {
 		if(segment.withinSegment(rowInSegment, newColumnInSegment)){
 			return new Position(segment, rowInSegment, newColumnInSegment);
 		}else{
-			return null; // TO DO
+			Segment segmentAfterThis = segment.getSegmentAfterThis();
+			if(segmentAfterThis != null){
+				return new Position(segmentAfterThis, rowInSegment, 0);
+			}else{
+				return null;
+			}
 		}
 	}
 	public Vehicle getVehicle(){

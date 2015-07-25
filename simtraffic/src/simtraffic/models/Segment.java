@@ -1,6 +1,5 @@
 package simtraffic.models;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class Segment {
@@ -19,11 +18,17 @@ public class Segment {
 	private int maxRowIndex;
 	private int maxColumnIndex;
 	
-	Segment segmentBeforeThis = null;
-	Segment segmentAfterThis = null;
+	private Segment segmentBeforeThis = null;
+	private Segment segmentAfterThis = null;
 	
-	LinkedList<Vehicle> vehiclesQueuingToEnter = new LinkedList<Vehicle>();
-	Vehicle[][] segmentGrid = null;
+	private Vehicle[][] getSegmentGrid() {
+		return segmentGrid;
+	}
+	public Segment getSegmentAfterThis() {
+		return segmentAfterThis;
+	}
+	private LinkedList<Vehicle> vehiclesQueuingToEnter = new LinkedList<Vehicle>();
+	private Vehicle[][] segmentGrid = null;
 	
 	public void setSegmentBeforeThis(Segment seg){
 		segmentBeforeThis = seg;
@@ -31,6 +36,7 @@ public class Segment {
 	public void setSegmentAfterThis(Segment seg){
 		segmentAfterThis = seg;
 	}
+	
 	
 	public Segment(int id, int rows, int columns){
 		this.id = id;
@@ -89,7 +95,23 @@ public class Segment {
 		return allowEntry;
 	}
 	public void moveInLane(Vehicle v){
-		
+		Position pCurrent = v.getPosition();
+		Position pNext = pCurrent.next();
+			
+		if(pNext != null){
+			if(pNext.getVehicle() == null ){
+				v.setPosition(pNext);
+				Segment segmentAfterThis = pNext.getSegment();
+				segmentAfterThis.getSegmentGrid()[pNext.getRowCoord()][ pNext.getColumnCoord()] = v;
+				segmentGrid[pCurrent.getRowCoord()][ pCurrent.getColumnCoord()] = null;
+			}else{
+				System.out.println("TODO : segmentAfterThis is null from position " + pCurrent);
+			}
+		}else{
+			segmentGrid[pCurrent.getRowCoord()][ pCurrent.getColumnCoord()] = null;
+			System.out.println("Vehicle journey finished. Next position is null from position " + pCurrent);
+			
+		}
 		
 		
 	}
@@ -101,29 +123,7 @@ public class Segment {
 			for(int r= maxRowIndex;r>=0; r--){ // Fastest lane first
 				Vehicle v = segmentGrid[r][c];
 				if(v != null){
-					Position pCurrent = v.getPosition();
-					
-					Position pNext = pCurrent.next();
-					System.out.println("---- " + this.getId());
-					if(pNext == null){
-						
-						if(segmentAfterThis != null){
-							segmentAfterThis.enterLane(v);
-							segmentGrid[pCurrent.getRowCoord()][ pCurrent.getColumnCoord()] = null;
-						}else{
-							System.out.println("TODO : Next position from " + pCurrent + " is null and segmentAfterThis is also null");
-						}
-					}else{
-						if(pNext.getVehicle() == null ){
-							v.setPosition(pNext);
-							segmentGrid[pNext.getRowCoord()][ pNext.getColumnCoord()] = v;
-							segmentGrid[pCurrent.getRowCoord()][ pCurrent.getColumnCoord()] = null;
-							
-							
-						}
-					}
-					
-					
+					moveInLane(v);
 				}
 			}
 		}
