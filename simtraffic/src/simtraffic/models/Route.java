@@ -12,9 +12,9 @@ public class Route {
 	public void addSegment(Segment segment){
 		segments.add(segment);
 	}
-	public boolean enter(Vehicle vehicle) throws RunningException{
-		return segments.get(0).enterLane(vehicle);
-	}
+//private boolean enter(Vehicle vehicle) throws RunningException{
+//		return segments.get(0).enterLane(vehicle);
+//	}
 	public Segment getFirstSegment() throws ConfigurationException{
 		if(segments.size() == 0) throw new ConfigurationException("Route has empty segments");
 		return segments.get(0);

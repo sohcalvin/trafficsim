@@ -2,10 +2,14 @@ package simtraffic.models;
 
 public class Position {
 	
-	Segment segment = null;
-	int rowInSegment = -1;
-	int columnInSegment = -1;
+	private Segment segment = null;
+	private int rowInSegment = -1;
+	private int columnInSegment = -1;
+	private int loopTimeCount = -1;
 	
+	public int getLoopTimeCount() {
+		return loopTimeCount;
+	}
 	public String toString(){
 		if(segment == null) return "NullSeg";
 		return new StringBuffer().append("S:" + segment.getId())
@@ -13,26 +17,19 @@ public class Position {
 				.append( rowInSegment )
 				.append(",")
 				.append( columnInSegment )
+				.append(",T:")
+				.append( loopTimeCount )
 				.toString();
 		
 	}
-	public Position(){
-	}
-	public Position(Segment seg, int rowInSegment, int columnInSegment){
-		set(seg,rowInSegment, columnInSegment);
+	public Position(Segment seg, int rowInSegment, int columnInSegment,int timeLoop){
+		segment = seg;
+		this.rowInSegment = rowInSegment;
+		this.columnInSegment = columnInSegment;
+		this.loopTimeCount = timeLoop;
 	}
 	
-	public void set(Segment seg, int rowInSegment, int columnInSegment){
-		this.segment = seg;
-		this.rowInSegment = rowInSegment;
-		this.columnInSegment = columnInSegment;
-	}
-	public void set(int rowInSegment, int columnInSegment) throws RunningException{
-		if(segment == null) throw new RunningException("Attempting to set row/column when segment is null");
-		this.rowInSegment = rowInSegment;
-		this.columnInSegment = columnInSegment;
-		
-	}
+
 	public Segment getSegment(){
 		return segment;
 	}
@@ -65,14 +62,14 @@ public class Position {
 	
 	
 	}
-	public Position next(){
+	public Position next(int timeLoop){
 		int newColumnInSegment = columnInSegment + 1;
 		if(segment.withinSegment(rowInSegment, newColumnInSegment)){
-			return new Position(segment, rowInSegment, newColumnInSegment);
+			return new Position(segment, rowInSegment, newColumnInSegment, timeLoop);
 		}else{
 			Segment segmentAfterThis = segment.getSegmentAfterThis();
 			if(segmentAfterThis != null){
-				return new Position(segmentAfterThis, rowInSegment, 0);
+				return new Position(segmentAfterThis, rowInSegment, 0, timeLoop);
 			}else{
 				return null;
 			}

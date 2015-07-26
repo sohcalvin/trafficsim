@@ -5,10 +5,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-
-
-
-
 import simtraffic.builders.VehicleFactory;
 import simtraffic.models.ConfigurationException;
 import simtraffic.models.RoadNetwork;
@@ -37,6 +33,7 @@ public class SimApp {
 		RoadNetwork roadNetwork = RoadNetwork.getInstance();
 		Route route = roadNetwork.makeRoute(new int[]{1,2});
 		
+		
 	//	ExecutorService es = Executors.newCachedThreadPool();
 		
 //		int vehNum = 1000;
@@ -55,25 +52,33 @@ public class SimApp {
 //		}
 		
 		// Instantiates and queues vehicles to enter routes
+		ArrayList<Vehicle> allVehicles = new ArrayList<Vehicle>();
 		for (int i = 0; i < 5; i++) {
 			Vehicle v = vehicleFactory.makeVehicle();
 			v.setRoute(route);
+			allVehicles.add(v);
 			//es.execute(v);
 		}
-		//Thread.sleep(3000);
 		System.out.println("Empty route");
 		System.out.println(route);
 		
-		int loops = 25;
-		for(int i =0 ; i < loops ; i++){
+		int timeLoop = 35;  // time loops
+		for(int t =0 ; t < timeLoop ; t++){
 			ArrayList<Segment> segments =  route.getSegments();
 			int maxIdx = segments.size()-1;
 			for(int s=maxIdx; s>=0; s--){
-				segments.get(s).moveVehicles();
+				segments.get(s).moveVehicles(t);
 			}
-			System.out.println("After loop " + i);
+			System.out.println("After loop " + t);
 			System.out.println(route);
 		}
+		
+		for(Vehicle v : allVehicles){
+			System.out.println(v);
+			System.out.println(v.toStringJourney());
+		}
+		
+		
 		
 		
 		//es.shutdown();

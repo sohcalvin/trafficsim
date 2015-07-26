@@ -20,6 +20,8 @@ public class Segment {
 	
 	private Segment segmentBeforeThis = null;
 	private Segment segmentAfterThis = null;
+	private LinkedList<Vehicle> vehiclesQueuingToEnter = new LinkedList<Vehicle>();
+	private Vehicle[][] segmentGrid = null;
 	
 	private Vehicle[][] getSegmentGrid() {
 		return segmentGrid;
@@ -27,9 +29,7 @@ public class Segment {
 	public Segment getSegmentAfterThis() {
 		return segmentAfterThis;
 	}
-	private LinkedList<Vehicle> vehiclesQueuingToEnter = new LinkedList<Vehicle>();
-	private Vehicle[][] segmentGrid = null;
-	
+		
 	public void setSegmentBeforeThis(Segment seg){
 		segmentBeforeThis = seg;
 	}
@@ -70,15 +70,15 @@ public class Segment {
 	public void queueVehicle(Vehicle v){
 		vehiclesQueuingToEnter.add(v);
 	}
-	public synchronized boolean enterLane(Vehicle vehicleEntering) throws RunningException{
-		return enterLane(vehicleEntering, 0,0);
+	public synchronized boolean enterLane(Vehicle vehicleEntering, int timeLoopNumber) throws RunningException{
+		return enterLane(vehicleEntering, 0,0, timeLoopNumber);
 	}
 
-	public synchronized boolean enterLane(Vehicle vehicleEntering, int entryRow, int entryColumn) throws RunningException{
+	public synchronized boolean enterLane(Vehicle vehicleEntering, int entryRow, int entryColumn, int timeLoopNumber) throws RunningException{
 		
 		if(segmentGrid[entryRow][entryColumn] != null) return false; // already occupied
 		
-		Position entryPosition = new Position(this, entryRow,entryColumn);
+		Position entryPosition = new Position(this, entryRow,entryColumn, timeLoopNumber);
 		Vehicle vehicleBehind = vehicleBehind(entryRow,entryColumn);
 		boolean allowEntry = false;
 		if(vehicleBehind == null) allowEntry = true;
@@ -94,9 +94,9 @@ public class Segment {
 		
 		return allowEntry;
 	}
-	public void moveInLane(Vehicle v){
+	public void moveInLane(Vehicle v, int timeLoopNumber){
 		Position pCurrent = v.getPosition();
-		Position pNext = pCurrent.next();
+		Position pNext = pCurrent.next(timeLoopNumber);
 			
 		if(pNext != null){
 			if(pNext.getVehicle() == null ){
@@ -109,7 +109,7 @@ public class Segment {
 			}
 		}else{
 			segmentGrid[pCurrent.getRowCoord()][ pCurrent.getColumnCoord()] = null;
-			System.out.println("Vehicle journey finished. Next position is null from position " + pCurrent);
+			System.out.println("Vehicle " +v+ " journey finished. Next position is null from position " + pCurrent);
 			
 		}
 		
@@ -118,22 +118,22 @@ public class Segment {
 	
 	
 	
-	public void moveVehicles() throws RunningException{
+	public void moveVehicles(int timeLoopNumber) throws RunningException{
 		for(int c =maxColumnIndex; c>=0; c--){ // Front first
 			for(int r= maxRowIndex;r>=0; r--){ // Fastest lane first
 				Vehicle v = segmentGrid[r][c];
 				if(v != null){
-					moveInLane(v);
+					moveInLane(v,timeLoopNumber);
 				}
 			}
 		}
-		moveNextVehicleFromQueue();
+		moveNextVehicleFromQueue(timeLoopNumber);
 	}
 
-	private void moveNextVehicleFromQueue() throws RunningException{
+	private void moveNextVehicleFromQueue(int timeLoopNumber) throws RunningException{
 		Vehicle v = vehiclesQueuingToEnter.pollFirst();
 		if(v != null){
-			enterLane(v);
+			enterLane(v, timeLoopNumber);
 		}
 	}
 	
