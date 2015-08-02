@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 
 import simtraffic.builders.VehicleFactory;
 import simtraffic.models.ConfigurationException;
+import simtraffic.models.Position;
 import simtraffic.models.RoadNetwork;
 import simtraffic.models.Route;
 import simtraffic.models.RunningException;
@@ -53,7 +54,7 @@ public class SimApp {
 		
 		// Instantiates and queues vehicles to enter routes
 		ArrayList<Vehicle> allVehicles = new ArrayList<Vehicle>();
-		for (int i = 0; i < 50; i++) {
+		for (int i = 0; i < 5; i++) {
 			Vehicle v = vehicleFactory.makeVehicle();
 			v.setRoute(route);
 			allVehicles.add(v);
@@ -75,11 +76,13 @@ public class SimApp {
 		
 		StringBuffer data = new StringBuffer();
 		int last = allVehicles.size();
+		
+		
 		for(Vehicle v : allVehicles){
-			//System.out.println(v);
 			data.append(v.toStringJourney());
 			if(--last > 0) data.append(",\n");
 		}
+		
 		System.out.println("[\n" + data.toString() + "\n]");
 		
 		

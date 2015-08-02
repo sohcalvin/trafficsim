@@ -70,11 +70,11 @@ public class Segment {
 	public void queueVehicle(Vehicle v){
 		vehiclesQueuingToEnter.add(v);
 	}
-	public synchronized boolean enterLane(Vehicle vehicleEntering, int timeLoopNumber) throws RunningException{
+	private synchronized boolean enterLane(Vehicle vehicleEntering, int timeLoopNumber) throws RunningException{
 		return enterLane(vehicleEntering, 0,0, timeLoopNumber);
 	}
 
-	public synchronized boolean enterLane(Vehicle vehicleEntering, int entryRow, int entryColumn, int timeLoopNumber) throws RunningException{
+	private synchronized boolean enterLane(Vehicle vehicleEntering, int entryRow, int entryColumn, int timeLoopNumber) throws RunningException{
 		
 		if(segmentGrid[entryRow][entryColumn] != null) return false; // already occupied
 		
@@ -94,17 +94,18 @@ public class Segment {
 		
 		return allowEntry;
 	}
-	public void moveInLane(Vehicle v, int timeLoopNumber){
+	private void moveInLane(Vehicle v, int timeLoopNumber){
 		Position pCurrent = v.getPosition();
 		Position pNext = pCurrent.next(timeLoopNumber);
 			
 		if(pNext != null){
-			if(pNext.getVehicle() == null ){
+			if(pNext.getVehicle() == null  && pNext.distanceOfNextVehicleAhead(5)>4 ){
 				v.setPosition(pNext);
 				Segment segmentAfterThis = pNext.getSegment();
 				segmentAfterThis.getSegmentGrid()[pNext.getRowCoord()][ pNext.getColumnCoord()] = v;
 				segmentGrid[pCurrent.getRowCoord()][ pCurrent.getColumnCoord()] = null;
 			}else{
+				v.setPosition(pCurrent);
 				System.out.println("TODO : segmentAfterThis is null from position " + pCurrent);
 			}
 		}else{
@@ -132,8 +133,13 @@ public class Segment {
 
 	private void moveNextVehicleFromQueue(int timeLoopNumber) throws RunningException{
 		Vehicle v = vehiclesQueuingToEnter.pollFirst();
+		System.out.println(">>>>>v:" +v);
 		if(v != null){
 			enterLane(v, timeLoopNumber);
+		}
+		for(Vehicle v2 : vehiclesQueuingToEnter){
+			System.out.println(">>>>>v2:" +v2);
+			v2.setPosition(new Position(this,0,0,timeLoopNumber));;
 		}
 	}
 	
@@ -150,7 +156,7 @@ public class Segment {
 	
 	
 
-	public int canPosition(int rowCoord, int columnCoord) {
+	private int canPosition(int rowCoord, int columnCoord) {
 		if(columnCoord > maxColumnIndex ) return POS_ERROR_TAIL;
 		if(columnCoord < 0 ) return POS_ERROR_HEAD;
 		

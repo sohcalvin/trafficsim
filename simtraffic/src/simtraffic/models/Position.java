@@ -85,16 +85,31 @@ public class Position {
 			}
 		}
 	}
+	public int distanceOfNextVehicleAhead(int maxDistance){
+		int i =0;
+		while(true){
+			if(i++ > maxDistance) break;
+			Position nextPosition = this.next(-1); // Don't care about time
+			if(nextPosition == null) continue;
+			if(nextPosition.getVehicle() == null )continue;
+			else break;
+		}
+		
+		return i;
+		
+	}
+	
+	
 	public Vehicle getVehicle(){
 		return segment.getVehicleAt(rowInSegment, columnInSegment); 
 	}
 	
-	private boolean isActive(){
-		if(segment != null && getRowCoord() >= 0 && getColumnCoord() >= 0){
-			return true;
-		}
-		return false;
-	}
+//	private boolean isActive(){
+//		if(segment != null && getRowCoord() >= 0 && getColumnCoord() >= 0){
+//			return true;
+//		}
+//		return false;
+//	}
 	
 	
 	

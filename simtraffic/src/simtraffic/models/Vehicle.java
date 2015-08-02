@@ -64,27 +64,6 @@ public class Vehicle implements Runnable {
 	}
 	
 
-//	public void moveForward() throws RunningException {
-//		Segment currentSegment = position.getSegment();
-//		int currentRow = position.getRowCoord();
-//		int columnAhead = position.getColumnCoord() + 1;
-//
-//		int outcome = currentSegment.canPosition(currentRow, columnAhead);
-//
-//		switch (outcome) {
-//			case Segment.POS_ACCEPT:
-//				position = new Position(currentSegment, currentRow, columnAhead);
-//				break;
-//	
-//			case Segment.POS_DENY:	
-//				break;
-//			default:
-//				break;
-//
-//		}
-//
-//	}
-
 	public String toString() {
 		return "{ \"ID\": " + id + "}";
 	}
@@ -92,7 +71,9 @@ public class Vehicle implements Runnable {
 		StringBuilder b  = new StringBuilder();
 		b.append("[");
 		int last = journey.size();
+		 
 		for(Position p : journey){
+			//b.append("<" +p.getLoopTimeCount()  +">");
 			b.append(p.toString());
 			if(--last > 0 ) b.append(",");
 		
@@ -100,6 +81,9 @@ public class Vehicle implements Runnable {
 		b.append("]");
 		return b.toString();
 		
+		
 	}
+	//public ArrayList<Position>  getJourney(){ return journey; }
+	
 
 }
