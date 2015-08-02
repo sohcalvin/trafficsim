@@ -12,6 +12,16 @@ public class Position {
 	}
 	public String toString(){
 		if(segment == null) return "NullSeg";
+		return new StringBuffer().append("{\"x\":")
+				.append( columnInSegment )
+				.append(",\"y\":")
+				.append( rowInSegment )
+				.append("}")
+				.toString();
+		
+	}
+	public String toString2(){
+		if(segment == null) return "NullSeg";
 		return new StringBuffer().append("S:" + segment.getId())
 				.append(",")
 				.append( rowInSegment )

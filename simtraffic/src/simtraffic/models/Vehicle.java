@@ -90,10 +90,14 @@ public class Vehicle implements Runnable {
 	}
 	public String toStringJourney(){
 		StringBuilder b  = new StringBuilder();
+		b.append("[");
+		int last = journey.size();
 		for(Position p : journey){
-			b.append(p.toString()).append("\n");
+			b.append(p.toString());
+			if(--last > 0 ) b.append(",");
 		
 		}
+		b.append("]");
 		return b.toString();
 		
 	}

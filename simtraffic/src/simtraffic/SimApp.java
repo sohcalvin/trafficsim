@@ -53,7 +53,7 @@ public class SimApp {
 		
 		// Instantiates and queues vehicles to enter routes
 		ArrayList<Vehicle> allVehicles = new ArrayList<Vehicle>();
-		for (int i = 0; i < 5; i++) {
+		for (int i = 0; i < 50; i++) {
 			Vehicle v = vehicleFactory.makeVehicle();
 			v.setRoute(route);
 			allVehicles.add(v);
@@ -73,10 +73,14 @@ public class SimApp {
 			System.out.println(route);
 		}
 		
+		StringBuffer data = new StringBuffer();
+		int last = allVehicles.size();
 		for(Vehicle v : allVehicles){
-			System.out.println(v);
-			System.out.println(v.toStringJourney());
+			//System.out.println(v);
+			data.append(v.toStringJourney());
+			if(--last > 0) data.append(",\n");
 		}
+		System.out.println("[\n" + data.toString() + "\n]");
 		
 		
 		
