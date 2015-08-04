@@ -12,10 +12,13 @@ public class Position {
 	}
 	public String toString(){
 		if(segment == null) return "NullSeg";
+		int absoluteX = columnInSegment + segment.getxCoord();
+		int absoluteY = rowInSegment+ segment.getyCoord();
+		
 		return new StringBuffer().append("{\"x\":")
-				.append( columnInSegment )
+				.append( absoluteX )
 				.append(",\"y\":")
-				.append( rowInSegment )
+				.append( absoluteY )
 				.append("}")
 				.toString();
 		

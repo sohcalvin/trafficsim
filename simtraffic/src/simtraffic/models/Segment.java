@@ -17,11 +17,20 @@ public class Segment {
 	private int id;
 	private int maxRowIndex;
 	private int maxColumnIndex;
+	private int xCoord;
+	public int getxCoord() {
+		return xCoord;
+	}
+	public int getyCoord() {
+		return yCoord;
+	}
+	private int yCoord;
 	
 	private Segment segmentBeforeThis = null;
 	private Segment segmentAfterThis = null;
 	private LinkedList<Vehicle> vehiclesQueuingToEnter = new LinkedList<Vehicle>();
 	private Vehicle[][] segmentGrid = null;
+	 
 	
 	private Vehicle[][] getSegmentGrid() {
 		return segmentGrid;
@@ -38,10 +47,12 @@ public class Segment {
 	}
 	
 	
-	public Segment(int id, int rows, int columns){
+	public Segment(int id, int rows, int columns, int xCoord, int yCoord){
 		this.id = id;
 		this.maxRowIndex = rows-1;
 		this.maxColumnIndex = columns-1;
+		this.xCoord = xCoord;
+		this.yCoord = yCoord;
 		segmentGrid = new Vehicle[rows][columns];
 		
 	}
@@ -68,6 +79,7 @@ public class Segment {
 		return vehicleBehind;
 	}
 	public void queueVehicle(Vehicle v){
+		v.setPosition(new Position(this,-1,-1,-1));
 		vehiclesQueuingToEnter.add(v);
 	}
 	private synchronized boolean enterLane(Vehicle vehicleEntering, int timeLoopNumber) throws RunningException{
@@ -132,15 +144,20 @@ public class Segment {
 	}
 
 	private void moveNextVehicleFromQueue(int timeLoopNumber) throws RunningException{
+		
+		
 		Vehicle v = vehiclesQueuingToEnter.pollFirst();
-		System.out.println(">>>>>v:" +v);
-		if(v != null){
-			enterLane(v, timeLoopNumber);
+		//System.out.println(">>>>>v:" +v);
+		if(v != null ){
+			if( !enterLane(v, timeLoopNumber)){
+				vehiclesQueuingToEnter.addFirst(v);
+			}
 		}
 		for(Vehicle v2 : vehiclesQueuingToEnter){
-			System.out.println(">>>>>v2:" +v2);
+			//System.out.println(">>>>>v2:" +v2);
 			v2.setPosition(new Position(this,0,0,timeLoopNumber));;
 		}
+	
 	}
 	
 	

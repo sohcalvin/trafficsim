@@ -73,7 +73,6 @@ public class Vehicle implements Runnable {
 		int last = journey.size();
 		 
 		for(Position p : journey){
-			//b.append("<" +p.getLoopTimeCount()  +">");
 			b.append(p.toString());
 			if(--last > 0 ) b.append(",");
 		

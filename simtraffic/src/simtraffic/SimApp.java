@@ -54,7 +54,7 @@ public class SimApp {
 		
 		// Instantiates and queues vehicles to enter routes
 		ArrayList<Vehicle> allVehicles = new ArrayList<Vehicle>();
-		for (int i = 0; i < 5; i++) {
+		for (int i = 0; i < 1355; i++) {
 			Vehicle v = vehicleFactory.makeVehicle();
 			v.setRoute(route);
 			allVehicles.add(v);
@@ -63,7 +63,7 @@ public class SimApp {
 		System.out.println("Empty route");
 		System.out.println(route);
 		
-		int timeLoop = 35;  // time loops
+		int timeLoop = 200;  // time loops
 		for(int t =0 ; t < timeLoop ; t++){
 			ArrayList<Segment> segments =  route.getSegments();
 			int maxIdx = segments.size()-1;
