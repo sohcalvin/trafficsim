@@ -54,7 +54,7 @@ public class SimApp {
 		
 		// Instantiates and queues vehicles to enter routes
 		ArrayList<Vehicle> allVehicles = new ArrayList<Vehicle>();
-		for (int i = 0; i < 1355; i++) {
+		for (int i = 0; i < 13; i++) {
 			Vehicle v = vehicleFactory.makeVehicle();
 			v.setRoute(route);
 			allVehicles.add(v);
