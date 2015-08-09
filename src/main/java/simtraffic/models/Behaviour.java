@@ -6,9 +6,9 @@ public enum Behaviour {
     RUSH(20, 6, 4);
    
     
-    private int preferredSpeed;
-    private int tailgateDistance;
-    private int cutinDistance;
+    private int preferredSpeed; 	// Base on number of car length per unit time
+    private int tailgateDistance; 	// Base on number of car length
+    private int cutinDistance;		// Base on number of car length
     
     private Behaviour(int preferredSpeed, int tailgateDistance, int cutinDistance){
 	this.preferredSpeed = preferredSpeed;
@@ -27,5 +27,6 @@ public enum Behaviour {
     public int getCutinDistance() {
         return cutinDistance;
     }
+  
 
 }

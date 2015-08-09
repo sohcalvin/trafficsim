@@ -1,7 +1,7 @@
 package simtraffic.models;
 
 public class Position {
-	
+	private final int visibilityDistance = 30;
 	private Segment segment = null;
 	private int rowInSegment = -1;
 	private int columnInSegment = -1;
@@ -88,18 +88,28 @@ public class Position {
 			}
 		}
 	}
-	public int distanceOfNextVehicleAhead(int maxDistance){
+	public int distanceOfNextVehicleAhead(){
 		int i =0;
 		while(true){
-			if(i++ > maxDistance) break;
+			if(i++ > visibilityDistance) break;
 			Position nextPosition = this.next(-1); // Don't care about time
 			if(nextPosition == null) continue;
 			if(nextPosition.getVehicle() == null )continue;
 			else break;
 		}
-		
 		return i;
-		
+	}
+	public Position nextFurthestPositionAhead(int preferredDistance, int tailgateDistance){
+	    int i =0;
+	    Position result = null;
+	    while(true){
+		if(i++ > visibilityDistance) break;
+		Position nextPosition = this.next(-1); // Don't care about time
+		if(nextPosition == null) continue;
+		if(nextPosition.getVehicle() == null )continue;
+		else break;
+	    }
+	    return result;
 	}
 	
 	
@@ -107,12 +117,7 @@ public class Position {
 		return segment.getVehicleAt(rowInSegment, columnInSegment); 
 	}
 	
-//	private boolean isActive(){
-//		if(segment != null && getRowCoord() >= 0 && getColumnCoord() >= 0){
-//			return true;
-//		}
-//		return false;
-//	}
+
 	
 	
 	

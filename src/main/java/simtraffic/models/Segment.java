@@ -111,11 +111,11 @@ public class Segment {
 		Position pNext = pCurrent.next(timeLoopNumber);
 			
 		if(pNext != null){
-			if(pNext.getVehicle() == null  && pNext.distanceOfNextVehicleAhead(5)>4 ){
+			if(pNext.getVehicle() == null  && pNext.distanceOfNextVehicleAhead()>4 ){
 				v.setPosition(pNext);
 				Segment segmentAfterThis = pNext.getSegment();
-				segmentAfterThis.getSegmentGrid()[pNext.getRowCoord()][ pNext.getColumnCoord()] = v;
-				segmentGrid[pCurrent.getRowCoord()][ pCurrent.getColumnCoord()] = null;
+				segmentAfterThis.setVehicleAt(v,pNext);
+				this.setVehicleAt(null, pCurrent);
 			}else{
 				v.setPosition(pCurrent);
 				System.out.println("TODO : segmentAfterThis is null from position " + pCurrent);
@@ -127,6 +127,9 @@ public class Segment {
 		}
 		
 		
+	}
+	private void setVehicleAt(Vehicle v, Position p){
+	    segmentGrid[p.getRowCoord()][ p.getColumnCoord()] = v;
 	}
 	
 	

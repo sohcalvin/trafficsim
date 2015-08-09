@@ -4,10 +4,10 @@ import java.util.ArrayList;
 
 public class Vehicle {
 	private long id;
-	private int safeDistance = 5; // Should change to configurable for each vehicle
 	private Behaviour behaviour = null;
 	private Route route = null;
 	private Position position = null;
+	private ArrayList<Integer> timeCount = new ArrayList<Integer>();
 	private ArrayList<Position> journey = new ArrayList<Position>();
 
 	public Vehicle(long id, Behaviour behaviour) {
@@ -21,10 +21,27 @@ public class Vehicle {
 		return position;
 	}
 	public void setPosition(Position pos){
-		position = pos;
-		journey.add(new Position(pos.getSegment(), pos.getRowCoord(), pos.getColumnCoord(),pos.getLoopTimeCount()));
+		this.position = pos;
+		this.journey.add(new Position(pos.getSegment(), pos.getRowCoord(), pos.getColumnCoord(),pos.getLoopTimeCount()));
+		//this.journey.add(new Position(pos.getSegment(), pos.getRowCoord(), pos.getColumnCoord()));
+		//this.timeCount.add(timeCount);
 
 	}
+	public Position getNextPreferredPosition(){
+	    if(position == null){
+		return null;
+	    }
+	    int preferredSpeed = behaviour.getPreferredSpeed();
+	    int distanceOfVehicleAhead = position.distanceOfNextVehicleAhead();
+	    int maxDistancePossible = distanceOfVehicleAhead - behaviour.getTailgateDistance();
+	    if(preferredSpeed < maxDistancePossible){
+		
+	    }
+	    
+	    return null; 
+	    
+	}
+	
 	public void setRoute(Route route) throws ConfigurationException {
 		this.route = route;
 		Segment firstSeg = route.getFirstSegment();
@@ -37,7 +54,7 @@ public class Vehicle {
 		}
 		
 		int distanceApart = position.distanceApart(positionAhead);
-		if(distanceApart > safeDistance){
+		if(distanceApart > behaviour.getTailgateDistance()){
 			return true;
 		}
 		
@@ -53,7 +70,6 @@ public class Vehicle {
 		StringBuilder b  = new StringBuilder();
 		b.append("[");
 		int last = journey.size();
-		 
 		for(Position p : journey){
 			b.append(p.toString());
 			if(--last > 0 ) b.append(",");

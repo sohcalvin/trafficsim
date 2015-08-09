@@ -26,7 +26,7 @@ import simtraffic.models.Segment;
 import simtraffic.models.Vehicle;
 
 public class SimApp {
-
+    	private static ArrayList<Vehicle> allVehicles = new ArrayList<Vehicle>();
 	/**
 	 * @param args
 	 * @throws InterruptedException
@@ -40,21 +40,15 @@ public class SimApp {
 	 * @throws RunningException
 	 */
 	public static void main(String[] args) throws InterruptedException, ConfigurationException, RunningException {
-		System.out.println("Running SimApp");
-		VehicleFactory vehicleFactory = VehicleFactory.getInstance();
+			
 		RoadNetwork roadNetwork = RoadNetwork.getInstance();
 		Route route = roadNetwork.makeRoute(new int[]{1,2});
 		
 		// Instantiates and queues vehicles to enter routes
-		ArrayList<Vehicle> allVehicles = new ArrayList<Vehicle>();
-		for (int i = 0; i < 13; i++) {
-			Vehicle v = vehicleFactory.makeVehicle(Behaviour.NORMAL);
-			v.setRoute(route);
-			allVehicles.add(v);
-		}
-		System.out.println("Empty route");
-		System.out.println(route);
-		
+		addVehicles(10,Behaviour.RELAX, route);
+		addVehicles(10,Behaviour.NORMAL, route);
+		addVehicles(10,Behaviour.RUSH, route);
+				
 		int timeLoop = 200;  // time loops
 		for(int t =0 ; t < timeLoop ; t++){
 			ArrayList<Segment> segments =  route.getSegments();
@@ -78,26 +72,35 @@ public class SimApp {
 		System.out.println("[\n" + data.toString() + "\n]");
 		writeToMongo(allVehicles);
 	}
-	
+	private static void addVehicles(int number, Behaviour behaviour, Route route) throws ConfigurationException{
+	    VehicleFactory vehicleFactory = VehicleFactory.getInstance();
+	    for (int i = 0; i < number; i++) {
+		Vehicle v = vehicleFactory.makeVehicle(behaviour);
+		v.setRoute(route);
+		allVehicles.add(v);
+	    }
+	}
 	private static void writeToMongo(ArrayList<Vehicle> vehicles){
 		MongoClient mongoClient = new MongoClient( "localhost" , 27017 );
 		MongoDatabase db = mongoClient.getDatabase("simdata");
 		MongoCollection<Document> collection = db.getCollection("vehicle");
-		
-		
-		for(Vehicle v : vehicles){
-//			data.append(v.toStringJourney());
-//			if(--last > 0) data.append(",\n");
-			Position p = v.getPosition();
-			
-			
-			Document document = new Document("vid",v.getId())
-			.append("y", p.getRowCoord())
-			.append("x", p.getColumnCoord())
-			.append("segid", p.getSegment().getId());
-			
-			collection.insertOne(document);
+		try{
+        		for(Vehicle v : vehicles){
+        			Position p = v.getPosition();
+        			Document document = new Document("vid",v.getId())
+        			.append("y", p.getRowCoord())
+        			.append("x", p.getColumnCoord())
+        			.append("segid", p.getSegment().getId());
+        			
+        			collection.insertOne(document);
+        		}
+		}catch(Exception e){
+		    e.printStackTrace();
+		}finally{
+		    mongoClient.close();
 		}
+		
+		
 	}
 	
 //    private static void notused() {
