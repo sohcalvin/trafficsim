@@ -5,7 +5,18 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import org.bson.Document;
+
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
+import com.mongodb.MongoClient;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+
 import simtraffic.builders.VehicleFactory;
+import simtraffic.models.Behaviour;
 import simtraffic.models.ConfigurationException;
 import simtraffic.models.Position;
 import simtraffic.models.RoadNetwork;
@@ -34,31 +45,12 @@ public class SimApp {
 		RoadNetwork roadNetwork = RoadNetwork.getInstance();
 		Route route = roadNetwork.makeRoute(new int[]{1,2});
 		
-		
-	//	ExecutorService es = Executors.newCachedThreadPool();
-		
-//		int vehNum = 1000;
-//		Vehicle[] vehicles = new Vehicle[1000]; 
-//		for(int i=0; i<vehNum; i++){
-//			Vehicle v = vehicleFactory.makeVehicle();
-//			v.setRoute(route);
-//			vehicles[i] = v;
-//		}
-//		
-//		for(int t=0; t <1000 ; t++){
-//			for(int i=0; i < vehNum; i++){
-//				vehicles[i].moveForward();
-//			}
-//			
-//		}
-		
 		// Instantiates and queues vehicles to enter routes
 		ArrayList<Vehicle> allVehicles = new ArrayList<Vehicle>();
 		for (int i = 0; i < 13; i++) {
-			Vehicle v = vehicleFactory.makeVehicle();
+			Vehicle v = vehicleFactory.makeVehicle(Behaviour.NORMAL);
 			v.setRoute(route);
 			allVehicles.add(v);
-			//es.execute(v);
 		}
 		System.out.println("Empty route");
 		System.out.println(route);
@@ -84,15 +76,46 @@ public class SimApp {
 		}
 		
 		System.out.println("[\n" + data.toString() + "\n]");
-		
-		
-		
-		
-		//es.shutdown();
-		
-	
-		//es.awaitTermination(100, TimeUnit.SECONDS); 
-		
+		writeToMongo(allVehicles);
 	}
+	
+	private static void writeToMongo(ArrayList<Vehicle> vehicles){
+		MongoClient mongoClient = new MongoClient( "localhost" , 27017 );
+		MongoDatabase db = mongoClient.getDatabase("simdata");
+		MongoCollection<Document> collection = db.getCollection("vehicle");
+		
+		
+		for(Vehicle v : vehicles){
+//			data.append(v.toStringJourney());
+//			if(--last > 0) data.append(",\n");
+			Position p = v.getPosition();
+			
+			
+			Document document = new Document("vid",v.getId())
+			.append("y", p.getRowCoord())
+			.append("x", p.getColumnCoord())
+			.append("segid", p.getSegment().getId());
+			
+			collection.insertOne(document);
+		}
+	}
+	
+//    private static void notused() {
+//	 ExecutorService es = Executors.newCachedThreadPool();
+//	 int vehNum = 1000;
+//	 Vehicle[] vehicles = new Vehicle[1000];
+//	 for(int i=0; i<vehNum; i++){
+//	 Vehicle v = vehicleFactory.makeVehicle();
+//	 v.setRoute(route);
+//	 vehicles[i] = v;
+//	 }
+//	
+//	 for(int t=0; t <1000 ; t++){
+//	 for(int i=0; i < vehNum; i++){
+//	 vehicles[i].moveForward();
+//	 }
+//	
+//	 }
+//    }
 
 }

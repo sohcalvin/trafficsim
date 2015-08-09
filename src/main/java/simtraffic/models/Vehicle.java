@@ -2,35 +2,21 @@ package simtraffic.models;
 
 import java.util.ArrayList;
 
-public class Vehicle implements Runnable {
+public class Vehicle {
 	private long id;
 	private int safeDistance = 5; // Should change to configurable for each vehicle
-	private Operator operator = null;
+	private Behaviour behaviour = null;
 	private Route route = null;
 	private Position position = null;
 	private ArrayList<Position> journey = new ArrayList<Position>();
 
-	public Vehicle(long id, Operator operator) {
+	public Vehicle(long id, Behaviour behaviour) {
 		this.id = id;
-		this.operator = operator;
+		this.behaviour = behaviour;
 	}
-
-	@Override
-	public void run() {
-//		try {
-//			while (!route.enter(this)) {
-//				Thread.sleep(1000);
-//			} 
-//			System.out.println("Vehicle " + this.id + " entered route");
-//		} catch (InterruptedException e) {
-//			e.printStackTrace();
-//		}catch(RunningException re){
-//			re.printStackTrace();
-//		}
-
+	public long getId() {
+		return id;
 	}
-
-	
 	public Position getPosition(){
 		return position;
 	}
@@ -42,7 +28,6 @@ public class Vehicle implements Runnable {
 	public void setRoute(Route route) throws ConfigurationException {
 		this.route = route;
 		Segment firstSeg = route.getFirstSegment();
-//		position.set(firstSeg, -1, -1);
 		firstSeg.queueVehicle(this);
 	}
 	public boolean isSafeToCutIn(Position positionAhead) throws RunningException{
@@ -57,9 +42,6 @@ public class Vehicle implements Runnable {
 		}
 		
 		return false;
-		
-		
-		
 		
 	}
 	
@@ -82,7 +64,6 @@ public class Vehicle implements Runnable {
 		
 		
 	}
-	//public ArrayList<Position>  getJourney(){ return journey; }
-	
+
 
 }
