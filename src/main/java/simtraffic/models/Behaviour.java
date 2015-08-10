@@ -1,7 +1,7 @@
 package simtraffic.models;
 
 public enum Behaviour {
-    RELAX(12, 10, 8),
+    RELAX(5, 10, 8),
     NORMAL(15, 8, 6),
     RUSH(20, 6, 4);
    

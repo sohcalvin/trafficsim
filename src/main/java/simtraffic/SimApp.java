@@ -45,12 +45,16 @@ public class SimApp {
 		Route route = roadNetwork.makeRoute(new int[]{1,2});
 		
 		// Instantiates and queues vehicles to enter routes
-		addVehicles(10,Behaviour.RELAX, route);
-		addVehicles(10,Behaviour.NORMAL, route);
-		addVehicles(10,Behaviour.RUSH, route);
+		addVehicles(1,Behaviour.RELAX, route);
+		//addVehicles(2,Behaviour.NORMAL, route);
+		addVehicles(1,Behaviour.RUSH, route);
+		addVehicles(1,Behaviour.RELAX, route);
+		addVehicles(1,Behaviour.RUSH, route);
 				
-		int timeLoop = 200;  // time loops
+		int timeLoop = 60;  // time loops
 		for(int t =0 ; t < timeLoop ; t++){
+		    	System.out.println("Before loop " + t);
+			System.out.println(route);
 			ArrayList<Segment> segments =  route.getSegments();
 			int maxIdx = segments.size()-1;
 			for(int s=maxIdx; s>=0; s--){
@@ -70,7 +74,7 @@ public class SimApp {
 		}
 		
 		System.out.println("[\n" + data.toString() + "\n]");
-		writeToMongo(allVehicles);
+		//writeToMongo(allVehicles);
 	}
 	private static void addVehicles(int number, Behaviour behaviour, Route route) throws ConfigurationException{
 	    VehicleFactory vehicleFactory = VehicleFactory.getInstance();

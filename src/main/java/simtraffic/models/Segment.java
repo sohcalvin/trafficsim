@@ -32,9 +32,7 @@ public class Segment {
 	private Vehicle[][] segmentGrid = null;
 	 
 	
-	private Vehicle[][] getSegmentGrid() {
-		return segmentGrid;
-	}
+	
 	public Segment getSegmentAfterThis() {
 		return segmentAfterThis;
 	}
@@ -79,7 +77,7 @@ public class Segment {
 		return vehicleBehind;
 	}
 	public void queueVehicle(Vehicle v){
-		v.setPosition(new Position(this,-1,-1,-1));
+		v.setPosition(new Position(this,-1,-1), -1);
 		vehiclesQueuingToEnter.add(v);
 	}
 	private synchronized boolean enterLane(Vehicle vehicleEntering, int timeLoopNumber) throws RunningException{
@@ -87,10 +85,11 @@ public class Segment {
 	}
 
 	private synchronized boolean enterLane(Vehicle vehicleEntering, int entryRow, int entryColumn, int timeLoopNumber) throws RunningException{
-		
+	    	//System.out.println("enterLane before : " + vehicleEntering );
+	    	//System.out.println("=>" + this);
 		if(segmentGrid[entryRow][entryColumn] != null) return false; // already occupied
 		
-		Position entryPosition = new Position(this, entryRow,entryColumn, timeLoopNumber);
+		Position entryPosition = new Position(this, entryRow,entryColumn);// timeLoopNumber);
 		Vehicle vehicleBehind = vehicleBehind(entryRow,entryColumn);
 		boolean allowEntry = false;
 		if(vehicleBehind == null) allowEntry = true;
@@ -100,27 +99,33 @@ public class Segment {
 		}
 		
 		if(allowEntry){
-			vehicleEntering.setPosition(entryPosition);
-			segmentGrid[entryRow][entryColumn] = vehicleEntering;
+			vehicleEntering.setPosition(entryPosition,timeLoopNumber);
+			//segmentGrid[entryRow][entryColumn] = vehicleEntering;
 		}
 		
+		//System.out.println("=>" + this);
 		return allowEntry;
 	}
 	private void moveInLane(Vehicle v, int timeLoopNumber){
+	    	Position pNext = v.getNextPreferredPosition();
+	    	
 		Position pCurrent = v.getPosition();
-		Position pNext = pCurrent.next(timeLoopNumber);
+		//Position pNext = pCurrent.next();
 			
 		if(pNext != null){
-			if(pNext.getVehicle() == null  && pNext.distanceOfNextVehicleAhead()>4 ){
-				v.setPosition(pNext);
-				Segment segmentAfterThis = pNext.getSegment();
-				segmentAfterThis.setVehicleAt(v,pNext);
-				this.setVehicleAt(null, pCurrent);
-			}else{
-				v.setPosition(pCurrent);
-				System.out.println("TODO : segmentAfterThis is null from position " + pCurrent);
-			}
+		    v.setPosition(pNext,timeLoopNumber);
+		    
+//			if(pNext.getVehicle() == null  && pNext.distanceOfNextVehicleAhead()>4 ){
+//				v.setPosition(pNext, timeLoopNumber);
+//				Segment segmentAfterThis = pNext.getSegment();
+//				segmentAfterThis.setVehicleAt(v,pNext);
+//				this.setVehicleAt(null, pCurrent);
+//			}else{
+//				v.setPosition(pCurrent,timeLoopNumber);
+//				System.out.println("TODO : segmentAfterThis is null from position " + pCurrent);
+//			}
 		}else{
+		   
 			segmentGrid[pCurrent.getRowCoord()][ pCurrent.getColumnCoord()] = null;
 			System.out.println("Vehicle " +v+ " journey finished. Next position is null from position " + pCurrent);
 			
@@ -128,7 +133,7 @@ public class Segment {
 		
 		
 	}
-	private void setVehicleAt(Vehicle v, Position p){
+	public void setVehicleAt(Vehicle v, Position p){
 	    segmentGrid[p.getRowCoord()][ p.getColumnCoord()] = v;
 	}
 	
@@ -147,9 +152,9 @@ public class Segment {
 	}
 
 	private void moveNextVehicleFromQueue(int timeLoopNumber) throws RunningException{
-		
-		
+	    //System.out.println(">>>>>" +vehiclesQueuingToEnter);
 		Vehicle v = vehiclesQueuingToEnter.pollFirst();
+		
 		//System.out.println(">>>>>v:" +v);
 		if(v != null ){
 			if( !enterLane(v, timeLoopNumber)){
@@ -158,7 +163,8 @@ public class Segment {
 		}
 		for(Vehicle v2 : vehiclesQueuingToEnter){
 			//System.out.println(">>>>>v2:" +v2);
-			v2.setPosition(new Position(this,0,0,timeLoopNumber));;
+			//v2.setPosition(new Position(this,0,0),timeLoopNumber);
+			v2.setPosition(new Position(this,-1,-1),timeLoopNumber);
 		}
 	
 	}
@@ -176,18 +182,7 @@ public class Segment {
 	
 	
 
-	private int canPosition(int rowCoord, int columnCoord) {
-		if(columnCoord > maxColumnIndex ) return POS_ERROR_TAIL;
-		if(columnCoord < 0 ) return POS_ERROR_HEAD;
-		
-		if(segmentGrid[rowCoord][columnCoord] == null){
-			return POS_ACCEPT;
-		}else{
-			return POS_DENY;
-		}
-		
-		
-	}
+	
 	public boolean isSameSegment(Segment seg){
 		return (id == seg.getId());
 	}

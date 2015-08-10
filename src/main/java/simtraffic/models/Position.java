@@ -1,15 +1,18 @@
 package simtraffic.models;
 
 public class Position {
+       
 	private final int visibilityDistance = 30;
 	private Segment segment = null;
 	private int rowInSegment = -1;
 	private int columnInSegment = -1;
-	private int loopTimeCount = -1;
 	
-	public int getLoopTimeCount() {
-		return loopTimeCount;
+	public Position(Segment seg, int rowInSegment, int columnInSegment){
+		segment = seg;
+		this.rowInSegment = rowInSegment;
+		this.columnInSegment = columnInSegment;
 	}
+	
 	public String toString(){
 		if(segment == null) return "NullSeg";
 		int absoluteX = columnInSegment + segment.getxCoord();
@@ -23,25 +26,8 @@ public class Position {
 				.toString();
 		
 	}
-	public String toString2(){
-		if(segment == null) return "NullSeg";
-		return new StringBuffer().append("S:" + segment.getId())
-				.append(",")
-				.append( rowInSegment )
-				.append(",")
-				.append( columnInSegment )
-				.append(",T:")
-				.append( loopTimeCount )
-				.toString();
-		
-	}
-	public Position(Segment seg, int rowInSegment, int columnInSegment,int timeLoop){
-		segment = seg;
-		this.rowInSegment = rowInSegment;
-		this.columnInSegment = columnInSegment;
-		this.loopTimeCount = timeLoop;
-	}
-	
+
+
 
 	public Segment getSegment(){
 		return segment;
@@ -75,14 +61,15 @@ public class Position {
 	
 	
 	}
-	public Position next(int timeLoop){
+	// null if no more position
+	public Position next(){
 		int newColumnInSegment = columnInSegment + 1;
 		if(segment.withinSegment(rowInSegment, newColumnInSegment)){
-			return new Position(segment, rowInSegment, newColumnInSegment, timeLoop);
+			return new Position(segment, rowInSegment, newColumnInSegment);
 		}else{
 			Segment segmentAfterThis = segment.getSegmentAfterThis();
 			if(segmentAfterThis != null){
-				return new Position(segmentAfterThis, rowInSegment, 0, timeLoop);
+				return new Position(segmentAfterThis, rowInSegment, 0);
 			}else{
 				return null;
 			}
@@ -92,24 +79,33 @@ public class Position {
 		int i =0;
 		while(true){
 			if(i++ > visibilityDistance) break;
-			Position nextPosition = this.next(-1); // Don't care about time
+			Position nextPosition = this.next(); 
 			if(nextPosition == null) continue;
 			if(nextPosition.getVehicle() == null )continue;
 			else break;
 		}
 		return i;
 	}
-	public Position nextFurthestPositionAhead(int preferredDistance, int tailgateDistance){
+	
+	// null if no more position
+	public Position nextFurthestPositionAhead(int requestedDistance){
 	    int i =0;
-	    Position result = null;
+	    
+	    Position furthestEmptyPosition = null;
+	    Position nextPosition = this;
 	    while(true){
 		if(i++ > visibilityDistance) break;
-		Position nextPosition = this.next(-1); // Don't care about time
-		if(nextPosition == null) continue;
-		if(nextPosition.getVehicle() == null )continue;
-		else break;
+		
+		nextPosition = nextPosition.next(); 
+		if(nextPosition == null  || nextPosition.getVehicle() != null) {
+		    break;
+		}
+		furthestEmptyPosition = nextPosition;
+		if(i > requestedDistance) break;
+		
 	    }
-	    return result;
+	    
+	    return furthestEmptyPosition;
 	}
 	
 	
