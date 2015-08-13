@@ -3,6 +3,8 @@ package simtraffic;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.SortedMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -96,12 +98,14 @@ public class SimApp {
         		    Document document = new Document("vid",v.getId())
         		    .append("behaviour", v.getBehaviour().toString());
         		    List<Document> list = new ArrayList<Document>(); 
-        		    ArrayList<Position> journey = v.getJourney();
-        		    for(Position p : journey){
+        		    SortedMap<Integer, Position> journey = v.getJourney();
+        		    for(Map.Entry<Integer, Position> e : journey.entrySet()){
+        			Integer timeCount = e.getKey();
+        			Position p = e.getValue();
         			int y = p.getRowCoord();
         			int x = p.getColumnCoord();
         			int s = p.getSegment().getId();
-        			Document vDoc = new Document("x", x).append("y", y).append("segid", s);
+        			Document vDoc = new Document("x", x).append("y", y).append("t",timeCount).append("segid", s);
         			list.add(vDoc);
          		    }
         		    document.append("journey", list);
