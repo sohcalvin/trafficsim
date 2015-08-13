@@ -1,6 +1,8 @@
 package simtraffic;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -74,7 +76,7 @@ public class SimApp {
 		}
 		
 		System.out.println("[\n" + data.toString() + "\n]");
-		//writeToMongo(allVehicles);
+		writeToMongo(allVehicles);
 	}
 	private static void addVehicles(int number, Behaviour behaviour, Route route) throws ConfigurationException{
 	    VehicleFactory vehicleFactory = VehicleFactory.getInstance();
@@ -88,15 +90,22 @@ public class SimApp {
 		MongoClient mongoClient = new MongoClient( "localhost" , 27017 );
 		MongoDatabase db = mongoClient.getDatabase("simdata");
 		MongoCollection<Document> collection = db.getCollection("vehicle");
+		collection.drop();
 		try{
         		for(Vehicle v : vehicles){
-        			Position p = v.getPosition();
-        			Document document = new Document("vid",v.getId())
-        			.append("y", p.getRowCoord())
-        			.append("x", p.getColumnCoord())
-        			.append("segid", p.getSegment().getId());
-        			
-        			collection.insertOne(document);
+        		    Document document = new Document("vid",v.getId())
+        		    .append("behaviour", v.getBehaviour().toString());
+        		    List<Document> list = new ArrayList<Document>(); 
+        		    ArrayList<Position> journey = v.getJourney();
+        		    for(Position p : journey){
+        			int y = p.getRowCoord();
+        			int x = p.getColumnCoord();
+        			int s = p.getSegment().getId();
+        			Document vDoc = new Document("x", x).append("y", y).append("segid", s);
+        			list.add(vDoc);
+         		    }
+        		    document.append("journey", list);
+        		    collection.insertOne(document);
         		}
 		}catch(Exception e){
 		    e.printStackTrace();

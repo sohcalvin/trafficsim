@@ -5,11 +5,13 @@ import java.util.ArrayList;
 public class Vehicle {
 	private long id;
 	private Behaviour behaviour = null;
+	
 	private Route route = null;
 	private Position position = null;
 	private ArrayList<Integer> timeCount = new ArrayList<Integer>();
 	private ArrayList<Position> journey = new ArrayList<Position>();
 
+	
 	public Vehicle(long id, Behaviour behaviour) {
 		this.id = id;
 		this.behaviour = behaviour;
@@ -19,6 +21,12 @@ public class Vehicle {
 	}
 	public Position getPosition(){
 		return position;
+	}
+	public ArrayList<Position> getJourney(){
+	    return journey;
+	}
+	public Behaviour getBehaviour() {
+	    return behaviour;
 	}
 	public void setPosition(Position pos, int timeCount){
 	    	Position currentPosition = getPosition();
