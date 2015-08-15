@@ -2,9 +2,11 @@ package simtraffic.models;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
+import java.util.TreeMap;
 
 import org.bson.Document;
 
@@ -75,18 +77,50 @@ public class RepositoryMongodb implements Repository {
     }
     @Override
     public void generateJson(File file){
-	FindIterable<Document> result = collection.find();
+	int tFrom = 0;
+	int tTo = 20;
 	
-	for(Document d : result){
-	    
-	    List<Document> journey = d.get("journey", List.class);
-	 
+	FindIterable<Document> vehicles = collection.find();
+	StringBuffer buf = new StringBuffer();
+	buf.append("[");
+	
+	for(Document aveh : vehicles){
+	    TreeMap<Integer, Document> timeLocation = new TreeMap<Integer,Document>();
+	    List<Document> journey = aveh.get("journey", List.class);
 	    for(Document x : journey){
-		System.out.println(x.getInteger("t"));
-		System.out.println(x.toJson());
+		int time = x.getInteger("t");
+		timeLocation.put(time, x);
 	    }
+	    Document lastDoc = null;
+	    buf.append("[");
+	    for(int i= tFrom ; i <= tTo ; i++){
+		Document docToPrint = null;
+		Document d = timeLocation.get(i);
+		if (d == null) {
+		    if (lastDoc == null) {
+			Map.Entry<Integer, Document> ceil = timeLocation
+				.ceilingEntry(i);
+			docToPrint = ceil.getValue();
+		    } else {
+			docToPrint = lastDoc;
+		    }
+
+		} else {
+		    docToPrint =d;
+		    lastDoc = d;
+		}
+		buf.append(docToPrint.toJson());
+		if(i < tTo){
+		    buf.append(",");
+		}else{
+		    buf.append("]");
+		}
+	    }
+	    
+	    buf.append(",\n");
 	}
-	
+	buf.append("]");
+	System.out.println(buf.toString());
 	
     }
   
