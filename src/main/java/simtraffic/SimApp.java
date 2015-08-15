@@ -23,6 +23,8 @@ import simtraffic.builders.VehicleFactory;
 import simtraffic.models.Behaviour;
 import simtraffic.models.ConfigurationException;
 import simtraffic.models.Position;
+import simtraffic.models.Repository;
+import simtraffic.models.RepositoryMongodb;
 import simtraffic.models.RoadNetwork;
 import simtraffic.models.Route;
 import simtraffic.models.RunningException;
@@ -67,18 +69,18 @@ public class SimApp {
 			System.out.println("After loop " + t);
 			System.out.println(route);
 		}
-		
-		StringBuffer data = new StringBuffer();
-		int last = allVehicles.size();
-		
-		
-		for(Vehicle v : allVehicles){
-			data.append(v.toStringJourney());
-			if(--last > 0) data.append(",\n");
-		}
-		
-		System.out.println("[\n" + data.toString() + "\n]");
 		writeToMongo(allVehicles);
+		generateSimData();
+		
+//	StringBuffer data = new StringBuffer();
+//	int last = allVehicles.size();
+//	for (Vehicle v : allVehicles) {
+//	    data.append(v.toStringJourney());
+//	    if (--last > 0)
+//		data.append(",\n");
+//	}
+//	System.out.println("[\n" + data.toString() + "\n]");
+		
 	}
 	private static void addVehicles(int number, Behaviour behaviour, Route route) throws ConfigurationException{
 	    VehicleFactory vehicleFactory = VehicleFactory.getInstance();
@@ -89,35 +91,23 @@ public class SimApp {
 	    }
 	}
 	private static void writeToMongo(ArrayList<Vehicle> vehicles){
-		MongoClient mongoClient = new MongoClient( "localhost" , 27017 );
-		MongoDatabase db = mongoClient.getDatabase("simdata");
-		MongoCollection<Document> collection = db.getCollection("vehicle");
-		collection.drop();
-		try{
+	    	Repository repo = new RepositoryMongodb("localhost", 27017,"simdata","vehicle");
+	    	repo.open().drop();
+	    	try{
         		for(Vehicle v : vehicles){
-        		    Document document = new Document("vid",v.getId())
-        		    .append("behaviour", v.getBehaviour().toString());
-        		    List<Document> list = new ArrayList<Document>(); 
-        		    SortedMap<Integer, Position> journey = v.getJourney();
-        		    for(Map.Entry<Integer, Position> e : journey.entrySet()){
-        			Integer timeCount = e.getKey();
-        			Position p = e.getValue();
-        			int y = p.getRowCoord();
-        			int x = p.getColumnCoord();
-        			int s = p.getSegment().getId();
-        			Document vDoc = new Document("x", x).append("y", y).append("t",timeCount).append("segid", s);
-        			list.add(vDoc);
-         		    }
-        		    document.append("journey", list);
-        		    collection.insertOne(document);
+        		    repo.writeVehicle(v);
         		}
 		}catch(Exception e){
 		    e.printStackTrace();
 		}finally{
-		    mongoClient.close();
+		    repo.close();
 		}
-		
-		
+	}
+	private static void generateSimData(){
+	    Repository repo = new RepositoryMongodb("localhost", 27017,"simdata","vehicle");
+	    repo.open();
+	    repo.generateJson(null);
+	    repo.close();
 	}
 	
 //    private static void notused() {
