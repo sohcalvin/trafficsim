@@ -81,24 +81,27 @@ public class Position {
 			}
 		}
 	}
-	public int distanceOfNextVehicleAhead(){
-		int i =0;
-		while(true){
-			if(i++ > visibilityDistance) break;
-			Position nextPosition = this.next(); 
-			if(nextPosition == null) continue;
-			if(nextPosition.getVehicle() == null )continue;
-			else break;
+	// null if no more position
+	public Position prior(){
+		int newColumnInSegment = columnInSegment - 1;
+		if(segment.withinSegment(rowInSegment, newColumnInSegment)){
+			return new Position(segment, rowInSegment, newColumnInSegment);
+		}else{
+			Segment segmentBeforeThis = segment.getSegmentBeforeThis();
+			if(segmentBeforeThis != null){
+				return new Position(segmentBeforeThis, rowInSegment, segment.getMaxColumnIndex());
+			}else{
+				return null;
+			}
 		}
-		return i;
 	}
 	
 	// null if no more position
-	public Position nextFurthestPositionAhead(int requestedDistance){
+	public Position nextFurthestPositionAhead(int requestedDistance, int tailgateDistance){
 	    int i =0;
-	    
 	    Position furthestEmptyPosition = null;
 	    Position nextPosition = this;
+	    int requestedPlusTailgate = requestedDistance + tailgateDistance;
 	    while(true){
 		if(i++ > visibilityDistance) break;
 		
@@ -107,13 +110,31 @@ public class Position {
 		    break;
 		}
 		furthestEmptyPosition = nextPosition;
-		if(i > requestedDistance) break;
+		if(i > requestedPlusTailgate) break;
 		
 	    }
+	    // Adjust for tailgateDistance
+	    if(furthestEmptyPosition != null){
+		Position adjusted = furthestEmptyPosition.reverse(tailgateDistance);
+	    }
 	    
+	   //return nextPosition;
 	    return furthestEmptyPosition;
 	}
-	
+	private Position reverse(int distance){
+	    Position priorPosition = this;
+	    int i =0;
+	    while(true){
+		if(i++ > visibilityDistance) break;
+		priorPosition = priorPosition.prior();
+		if(priorPosition == null  || priorPosition.getVehicle() != null) {
+		    break;
+		}
+				
+	    }
+	    return priorPosition;
+	    
+	}
 	
 	public Vehicle getVehicle(){
 		return segment.getVehicleAt(rowInSegment, columnInSegment); 

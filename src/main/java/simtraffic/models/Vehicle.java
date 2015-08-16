@@ -58,7 +58,18 @@ public class Vehicle {
 	    }
 	    int preferredSpeed = behaviour.getPreferredSpeed();
 	    int tailgateDistance = behaviour.getTailgateDistance();
-	    return  position.nextFurthestPositionAhead(preferredSpeed);
+	   
+	    Position availablePosition =  position.nextFurthestPositionAhead(preferredSpeed,tailgateDistance);
+	    try{
+		if(availablePosition != null){
+		    int dist = position.distanceApart(availablePosition);
+		    if(dist < preferredSpeed){
+			//position.nextFurthestPositionAheadAdjacentLane(preferredSpeed);
+		    }
+		    System.out.println(position + " - " + availablePosition + " = " + dist);
+		}
+	    }catch(RunningException re){ re.printStackTrace();}
+	    return availablePosition;
 
 	}
 	

@@ -32,6 +32,9 @@ public class Segment {
 	private Vehicle[][] segmentGrid = null;
 	 
 	
+	public Segment getSegmentBeforeThis() {
+	    return segmentBeforeThis;
+	} 
 	
 	public Segment getSegmentAfterThis() {
 		return segmentAfterThis;
@@ -108,7 +111,6 @@ public class Segment {
 	}
 	private void moveInLane(Vehicle v, int timeLoopNumber){
 	    	Position pNext = v.getNextPreferredPosition();
-	    	
 		Position pCurrent = v.getPosition();
 		//Position pNext = pCurrent.next();
 			
@@ -203,7 +205,7 @@ public class Segment {
 		}
 		return buf.toString();
 		
-	} 
+	}
 	
 	
 
