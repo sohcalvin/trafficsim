@@ -1,9 +1,9 @@
 package simtraffic.models;
 
 public enum Behaviour {
-    RELAX(5, 10, 8),
-    NORMAL(15, 8, 6),
-    RUSH(20, 6, 4);
+    RELAX(3, 5, 8),
+    NORMAL(15, 4, 6),
+    RUSH(20, 3, 4);
    
     
     private int preferredSpeed; 	// Base on number of car length per unit time

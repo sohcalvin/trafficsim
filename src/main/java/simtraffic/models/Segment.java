@@ -110,22 +110,20 @@ public class Segment {
 		return allowEntry;
 	}
 	private void moveInLane(Vehicle v, int timeLoopNumber){
+	    
+	    
 	    	Position pNext = v.getNextPreferredPosition();
 		Position pCurrent = v.getPosition();
-		//Position pNext = pCurrent.next();
-			
+		
+		System.out.println(v +" curr=" + pCurrent);
+		pCurrent.audit();
+		System.out.println(v +" next=" + pNext);
+		
+		
 		if(pNext != null){
 		    v.setPosition(pNext,timeLoopNumber);
 		    
-//			if(pNext.getVehicle() == null  && pNext.distanceOfNextVehicleAhead()>4 ){
-//				v.setPosition(pNext, timeLoopNumber);
-//				Segment segmentAfterThis = pNext.getSegment();
-//				segmentAfterThis.setVehicleAt(v,pNext);
-//				this.setVehicleAt(null, pCurrent);
-//			}else{
-//				v.setPosition(pCurrent,timeLoopNumber);
-//				System.out.println("TODO : segmentAfterThis is null from position " + pCurrent);
-//			}
+
 		}else{
 		   
 			segmentGrid[pCurrent.getRowCoord()][ pCurrent.getColumnCoord()] = null;

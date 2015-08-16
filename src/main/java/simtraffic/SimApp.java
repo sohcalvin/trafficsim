@@ -59,9 +59,7 @@ public class SimApp {
 				
 		int timeLoop = 60;  // time loops
 		for(int t =0 ; t < timeLoop ; t++){
-		    	System.out.println("Before loop " + t);
-			System.out.println(route);
-			ArrayList<Segment> segments =  route.getSegments();
+		    	ArrayList<Segment> segments =  route.getSegments();
 			int maxIdx = segments.size()-1;
 			for(int s=maxIdx; s>=0; s--){
 				segments.get(s).moveVehicles(t);

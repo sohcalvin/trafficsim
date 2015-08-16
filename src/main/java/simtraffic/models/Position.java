@@ -96,31 +96,76 @@ public class Position {
 		}
 	}
 	
+	private int distanceOfVehicleAhead(){
+	    Position nextPosition = this;
+	    int v =0;
+	    while(v < visibilityDistance ){
+		nextPosition = nextPosition.next();
+		if(nextPosition == null) return visibilityDistance;
+		if(nextPosition.getVehicle() != null) break;
+		v++;
+	    }
+	    return v;
+	}
+	private int distanceOfVehicleBehind(){
+	    Position nextPosition = this;
+	    int v =0;
+	    while(v > -visibilityDistance ){
+		nextPosition = nextPosition.prior();
+		if(nextPosition == null) return visibilityDistance;
+		if( nextPosition.getVehicle() != null) break;
+		v--;
+	    }
+	    return -v;
+	}
+	
+	public void audit(){
+	    System.out.println("Current : " + this);
+	    System.out.println("Ahead : " + distanceOfVehicleAhead());
+	    System.out.println("Behind : " + distanceOfVehicleBehind());
+	    
+	}
+	
 	// null if no more position
 	public Position nextFurthestPositionAhead(int requestedDistance, int tailgateDistance){
 	    int i =0;
 	    Position furthestEmptyPosition = null;
 	    Position nextPosition = this;
-	    int requestedPlusTailgate = requestedDistance + tailgateDistance;
+	    
 	    while(true){
 		if(i++ > visibilityDistance) break;
 		
 		nextPosition = nextPosition.next(); 
-		if(nextPosition == null  || nextPosition.getVehicle() != null) {
+		if(nextPosition == null) break;
+		if( nextPosition.getVehicle() != null) {
+		    for(int j=0; j <tailgateDistance; j++){ // adjust for tailgate
+			nextPosition = nextPosition.prior(); 
+		    }
+		    furthestEmptyPosition = nextPosition;
 		    break;
 		}
 		furthestEmptyPosition = nextPosition;
-		if(i > requestedPlusTailgate) break;
+		if(i > requestedDistance) break;
 		
 	    }
-	    // Adjust for tailgateDistance
-	    if(furthestEmptyPosition != null){
-		Position adjusted = furthestEmptyPosition.reverse(tailgateDistance);
-	    }
-	    
-	   //return nextPosition;
 	    return furthestEmptyPosition;
 	}
+	public Position nextOptimumPosition(int requestedDistance, int tailgateDistance)throws RunningException{
+	    Position current = this;
+	    Position currentLaneNextPosition = current.nextFurthestPositionAhead(requestedDistance, tailgateDistance);
+	    if(currentLaneNextPosition == null ) return null;
+	    if(currentLaneNextPosition.distanceApart(current) < requestedDistance){
+		    //Position anotherLane = current.getSegment().
+	    }
+	    return currentLaneNextPosition;
+		
+	    
+	    
+	}
+	
+	
+	
+	
 	private Position reverse(int distance){
 	    Position priorPosition = this;
 	    int i =0;
