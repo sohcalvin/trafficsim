@@ -60,11 +60,15 @@ public class RepositoryMongodb implements Repository {
 	    for (Map.Entry<Integer, Position> e : journey.entrySet()) {
 		Integer timeCount = e.getKey();
 		Position p = e.getValue();
-		int y = p.getRowCoord();
-		int x = p.getColumnCoord();
-		int s = p.getSegment().getId();
-		Document vDoc = new Document("x", x).append("y", y)
-			.append("t", timeCount).append("segid", s);
+		int y = p.getAbsoluteY();
+		int x = p.getAbsoluteX();
+		Segment segment = p.getSegment();
+		
+		int s = segment.getId();
+		Document vDoc = new 	Document("x", x)
+					.append("y", y)
+					.append("t", timeCount)
+					.append("segid", s);
 		list.add(vDoc);
 	    }
 	    document.append("journey", list);
@@ -83,7 +87,7 @@ public class RepositoryMongodb implements Repository {
 	FindIterable<Document> vehicles = collection.find();
 	StringBuffer buf = new StringBuffer();
 	buf.append("[");
-	
+	long size = collection.count(); long cnt=0;
 	for(Document aveh : vehicles){
 	    TreeMap<Integer, Document> timeLocation = new TreeMap<Integer,Document>();
 	    List<Document> journey = aveh.get("journey", List.class);
@@ -116,8 +120,8 @@ public class RepositoryMongodb implements Repository {
 		    buf.append("]");
 		}
 	    }
-	    
-	    buf.append(",\n");
+	    if(++cnt < size)   buf.append(",");
+	    buf.append("\n");
 	}
 	buf.append("]");
 	System.out.println(buf.toString());

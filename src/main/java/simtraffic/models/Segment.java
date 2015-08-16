@@ -18,10 +18,10 @@ public class Segment {
 	private int maxRowIndex;
 	private int maxColumnIndex;
 	private int xCoord;
-	public int getxCoord() {
+	public int getXCoord() {
 		return xCoord;
 	}
-	public int getyCoord() {
+	public int getYCoord() {
 		return yCoord;
 	}
 	private int yCoord;

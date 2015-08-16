@@ -15,8 +15,8 @@ public class Position {
 	
 	public String toString(){
 		if(segment == null) return "NullSeg";
-		int absoluteX = columnInSegment + segment.getxCoord();
-		int absoluteY = rowInSegment+ segment.getyCoord();
+		int absoluteX = columnInSegment + segment.getXCoord();
+		int absoluteY = rowInSegment+ segment.getYCoord();
 		
 		return new StringBuffer().append("{\"x\":")
 				.append( absoluteX )
@@ -37,6 +37,12 @@ public class Position {
 	}
 	public int getColumnCoord(){ 
 		return columnInSegment; 
+	}
+	public int getAbsoluteX(){
+	    return columnInSegment + segment.getXCoord();
+	}
+	public int getAbsoluteY(){
+	    return rowInSegment+ segment.getYCoord();
 	}
 	public int distanceApart(Position p) throws RunningException{ // Doesn't care if it's different row
 		int ajoinCheck = segment.ajoining(p.getSegment());
