@@ -187,7 +187,12 @@ public class Position {
 	
 
 	
-	
+	private class Visiblity{
+		int distanceToObstacle;
+		int obstacleType;
+		
+		
+	}
 	
 	
 	
