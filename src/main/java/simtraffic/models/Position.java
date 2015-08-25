@@ -96,27 +96,50 @@ public class Position {
 		}
 	}
 	
-	private int distanceOfVehicleAhead(){
+	private Range distanceOfVehicleAhead(){
 	    Position nextPosition = this;
 	    int v =0;
+	    int endType = Position.Range.END_CLEAR;
 	    while(v < visibilityDistance ){
-		nextPosition = nextPosition.next();
-		if(nextPosition == null) return visibilityDistance;
-		if(nextPosition.getVehicle() != null) break;
-		v++;
+			nextPosition = nextPosition.next();
+			if(nextPosition == null){
+				endType = Position.Range.END_NULL;
+				break;
+			}
+			if(nextPosition.getVehicle() != null){
+				endType = Position.Range.END_VEHICLE;
+				break;
+			}
+			v++;
 	    }
-	    return v;
+	    //if(v > 0) nextPosition = nextPosition.prior();
+	    return new Position.Range(v,endType);
 	}
-	private int distanceOfVehicleBehind(){
+	private Range distanceOfVehicleBehind(){
 	    Position nextPosition = this;
 	    int v =0;
+	    int endType = Position.Range.END_CLEAR;
 	    while(v > -visibilityDistance ){
-		nextPosition = nextPosition.prior();
-		if(nextPosition == null) return visibilityDistance;
-		if( nextPosition.getVehicle() != null) break;
-		v--;
+			nextPosition = nextPosition.prior();
+			if(nextPosition == null){
+				endType = Position.Range.END_NULL;
+				break;
+			}
+			if( nextPosition.getVehicle() != null) {
+				endType = Position.Range.END_VEHICLE;
+				break;
+			}
+			v--;
 	    }
-	    return -v;
+	   // if(v < 0) nextPosition = nextPosition.next();
+	    return new Position.Range(-v,endType);
+	}
+	private Position roll(int distance){
+		Position finalPosition = null;
+		for(int i = 0; i < distance; i++){
+			
+		}
+		return finalPosition;
 	}
 	
 	public void audit(){
@@ -131,6 +154,24 @@ public class Position {
 	    int i =0;
 	    Position furthestEmptyPosition = null;
 	    Position nextPosition = this;
+	    
+	    Range rangeAhead = this.distanceOfVehicleAhead();
+	    int distanceAhead = rangeAhead.getDistance();
+	    int endType = rangeAhead.getEndType();
+	    switch (endType) {
+	    	case Position.Range.END_VEHICLE :
+	    		int maxForwardDistance = distanceAhead - tailgateDistance;
+	    		if(requestedDistance <= maxForwardDistance ){
+	    			
+	    		}else{
+	    			
+	    		}
+	    		break;
+	    	
+	    	default :
+	    		break;
+	    }
+	    
 	    
 	    while(true){
 		if(i++ > visibilityDistance) break;
@@ -187,11 +228,28 @@ public class Position {
 	
 
 	
-	private class Visiblity{
-		int distanceToObstacle;
-		int obstacleType;
-		
-		
+	private class Range{
+		public static final int END_CLEAR = -1;   // Clear position after this range
+		public static final int END_NULL = -2;     // End of road(null position) after this range
+		public static final int END_VEHICLE = -3; // Vehicle exisit right after this range
+			
+		private int distance;
+		private int endType;
+	
+		public Range(int dist, int end_type){
+			this.distance = dist;
+			this.endType = end_type;
+			
+		}
+		public String toString(){
+			return distance + "(" + endType + ")";
+		}
+		public int getDistance() {
+			return distance;
+		}
+		public int getEndType() {
+			return endType;
+		}
 	}
 	
 	
