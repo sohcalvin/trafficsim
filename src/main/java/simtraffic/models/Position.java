@@ -136,6 +136,7 @@ public final class Position {
 	}
 	
 	// Returns final Position rolled to or Exception of out of segment
+	// Positive to roll forward and negative for backwards
 	private Position roll(int distance) throws RunningException{
 		Position finalPosition = this;
 		if(distance >=0 ){ // roll forward
@@ -191,30 +192,42 @@ public final class Position {
 	    	Position newPosition = this.roll(requestedDistance);
 	    	return newPosition;
 	    }catch(RunningException re){
-	    	re.printStackTrace();
+	    	re.printStackTrace(); // this shouldn't happen
 	    }
 	    return null;
 	    
-//	    while(true){
-//		if(i++ > visibilityDistance) break;
-//		
-//		nextPosition = nextPosition.next(); 
-//		if(nextPosition == null) break;
-//		if( nextPosition.getVehicle() != null) {
-//		    for(int j=0; j <tailgateDistance; j++){ // adjust for tailgate
-//			nextPosition = nextPosition.prior(); 
-//		    }
-//		    furthestEmptyPosition = nextPosition;
-//		    break;
-//		}
-//		furthestEmptyPosition = nextPosition;
-//		if(i > requestedDistance) break;
-//		
-//	    }
-//	    return furthestEmptyPosition;
 	}
-	
-	
+
+	private boolean isLeftLaneClear(Behaviour behaviour ){
+	    if(rowInSegment <= 0) return false; // No left lanes
+	    Position leftLanePosition = new Position(segment, rowInSegment-1, columnInSegment);
+	    return leftLanePosition.canEnter(behaviour);
+	}
+	private boolean isRightLaneClear(Behaviour behaviour ){
+	    int maxRowIndex = segment.getMaxRowIndex();
+	    if(rowInSegment >= maxRowIndex) return false; // No right lanes
+	    Position rightLanePosition = new Position(segment, rowInSegment+1, columnInSegment);
+	    return rightLanePosition.canEnter(behaviour);
+	}
+	private boolean canEnter(Behaviour behaviour){
+	    if(this.getVehicle() != null) return false; // Currently occupied
+	    
+	    Range rangeBehind = this.distanceOfVehicleBehind();
+	    Range rangeAhead = this.distanceOfVehicleAhead();
+	    int behind = rangeBehind.getDistance();
+	    int ahead = rangeAhead.getDistance();
+	    int cutInDistance = behaviour.getCutinDistance();
+	    int tailgateDistance = behaviour.getTailgateDistance();
+	    
+	    int behindType = rangeBehind.getEndType();
+	    int aheadType = rangeAhead.getEndType();
+	    boolean behindOk = ( behindType == Position.Range.END_NULL 	||behindType == Position.Range.END_CLEAR)? true : false;
+	    boolean aheadOk = ( aheadType == Position.Range.END_NULL 	||aheadType == Position.Range.END_CLEAR)? true : false;
+	    if(	behindOk && aheadOk) return true;
+	    if(aheadOk && behind > cutInDistance) return true;
+	    if(behindOk && ahead > tailgateDistance) return true;
+	    return false;
+	}
 	
 	public Position nextOptimumPosition(int requestedDistance, int tailgateDistance)throws RunningException{
 	    Position current = this;
