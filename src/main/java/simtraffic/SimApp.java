@@ -67,18 +67,9 @@ public class SimApp {
 			System.out.println("After loop " + t);
 			System.out.println(route);
 		}
-		writeToMongo(allVehicles);
-		generateSimData();
-		
-//	StringBuffer data = new StringBuffer();
-//	int last = allVehicles.size();
-//	for (Vehicle v : allVehicles) {
-//	    data.append(v.toStringJourney());
-//	    if (--last > 0)
-//		data.append(",\n");
-//	}
-//	System.out.println("[\n" + data.toString() + "\n]");
-		
+	//	writeToMongo(allVehicles);
+	//	generateSimData();
+			
 	}
 	private static void addVehicles(int number, Behaviour behaviour, Route route) throws ConfigurationException{
 	    VehicleFactory vehicleFactory = VehicleFactory.getInstance();
@@ -91,14 +82,14 @@ public class SimApp {
 	private static void writeToMongo(ArrayList<Vehicle> vehicles){
 	    	Repository repo = new RepositoryMongodb("localhost", 27017,"simdata","vehicle");
 	    	repo.open().drop();
-	    	try{
-        		for(Vehicle v : vehicles){
-        		    repo.writeVehicle(v);
-        		}
-		}catch(Exception e){
-		    e.printStackTrace();
-		}finally{
-		    repo.close();
+		try {
+			for (Vehicle v : vehicles) {
+				repo.writeVehicle(v);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			repo.close();
 		}
 	}
 	private static void generateSimData(){

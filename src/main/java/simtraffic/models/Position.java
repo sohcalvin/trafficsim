@@ -1,18 +1,18 @@
 package simtraffic.models;
 
-public class Position {
+public final class Position {
        
-	private final int visibilityDistance = 30;
-	private Segment segment = null;
-	private int rowInSegment = -1;
-	private int columnInSegment = -1;
+	private static final int visibilityDistance = 30;
+	private final Segment segment;
+	private final int rowInSegment;
+	private final int columnInSegment;
 	
 	public Position(Segment seg, int rowInSegment, int columnInSegment){
-		segment = seg;
+		this.segment = seg;
 		this.rowInSegment = rowInSegment;
 		this.columnInSegment = columnInSegment;
 	}
-	
+		
 	public String toString(){
 		if(segment == null) return "NullSeg";
 		int absoluteX = columnInSegment + segment.getXCoord();
@@ -134,10 +134,20 @@ public class Position {
 	   // if(v < 0) nextPosition = nextPosition.next();
 	    return new Position.Range(-v,endType);
 	}
-	private Position roll(int distance){
-		Position finalPosition = null;
-		for(int i = 0; i < distance; i++){
-			
+	
+	// Returns final Position rolled to or Exception of out of segment
+	private Position roll(int distance) throws RunningException{
+		Position finalPosition = this;
+		if(distance >=0 ){ // roll forward
+			for(int i = 0; i < distance; i++){
+				finalPosition = finalPosition.next();
+				if(finalPosition == null) throw new RunningException("Roll out of segment exception");
+			}
+		}else{				// roll backwards
+			for(int i = distance; i < 0; i++){
+				finalPosition = finalPosition.prior();
+				if(finalPosition == null) throw new RunningException("Roll out of segment exception");
+			}
 		}
 		return finalPosition;
 	}
@@ -158,38 +168,50 @@ public class Position {
 	    Range rangeAhead = this.distanceOfVehicleAhead();
 	    int distanceAhead = rangeAhead.getDistance();
 	    int endType = rangeAhead.getEndType();
+	    int maxForwardDistance = distanceAhead;
 	    switch (endType) {
 	    	case Position.Range.END_VEHICLE :
-	    		int maxForwardDistance = distanceAhead - tailgateDistance;
-	    		if(requestedDistance <= maxForwardDistance ){
-	    			
-	    		}else{
-	    			
-	    		}
+	    		maxForwardDistance = distanceAhead - tailgateDistance;
 	    		break;
-	    	
+	    	case Position.Range.END_NULL :
+	    		maxForwardDistance = distanceAhead;
+	    		break;
+	    	case Position.Range.END_CLEAR :
+	    		maxForwardDistance = distanceAhead;
+	    		break;
 	    	default :
 	    		break;
 	    }
-	    
-	    
-	    while(true){
-		if(i++ > visibilityDistance) break;
-		
-		nextPosition = nextPosition.next(); 
-		if(nextPosition == null) break;
-		if( nextPosition.getVehicle() != null) {
-		    for(int j=0; j <tailgateDistance; j++){ // adjust for tailgate
-			nextPosition = nextPosition.prior(); 
-		    }
-		    furthestEmptyPosition = nextPosition;
-		    break;
-		}
-		furthestEmptyPosition = nextPosition;
-		if(i > requestedDistance) break;
-		
+	   if(maxForwardDistance < 0) maxForwardDistance =0;
+	    if(requestedDistance > maxForwardDistance ) requestedDistance = maxForwardDistance;
+	    if(requestedDistance == 0  && endType == Position.Range.END_NULL){ // End of road condition
+	    	return null;
 	    }
-	    return furthestEmptyPosition;
+	    try{
+	    	Position newPosition = this.roll(requestedDistance);
+	    	return newPosition;
+	    }catch(RunningException re){
+	    	re.printStackTrace();
+	    }
+	    return null;
+	    
+//	    while(true){
+//		if(i++ > visibilityDistance) break;
+//		
+//		nextPosition = nextPosition.next(); 
+//		if(nextPosition == null) break;
+//		if( nextPosition.getVehicle() != null) {
+//		    for(int j=0; j <tailgateDistance; j++){ // adjust for tailgate
+//			nextPosition = nextPosition.prior(); 
+//		    }
+//		    furthestEmptyPosition = nextPosition;
+//		    break;
+//		}
+//		furthestEmptyPosition = nextPosition;
+//		if(i > requestedDistance) break;
+//		
+//	    }
+//	    return furthestEmptyPosition;
 	}
 	public Position nextOptimumPosition(int requestedDistance, int tailgateDistance)throws RunningException{
 	    Position current = this;

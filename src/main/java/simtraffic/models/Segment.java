@@ -112,12 +112,12 @@ public class Segment {
 	private void moveInLane(Vehicle v, int timeLoopNumber){
 	    
 	    
-	    	Position pNext = v.getNextPreferredPosition();
+	    Position pNext = v.getNextPreferredPosition();
 		Position pCurrent = v.getPosition();
 		
-		System.out.println(v +" curr=" + pCurrent);
+		System.out.println(">>>> " + v );
 		pCurrent.audit();
-		System.out.println(v +" next=" + pNext);
+		System.out.println("-- next=" + pNext);
 		
 		
 		if(pNext != null){
