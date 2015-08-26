@@ -213,6 +213,9 @@ public final class Position {
 //	    }
 //	    return furthestEmptyPosition;
 	}
+	
+	
+	
 	public Position nextOptimumPosition(int requestedDistance, int tailgateDistance)throws RunningException{
 	    Position current = this;
 	    Position currentLaneNextPosition = current.nextFurthestPositionAhead(requestedDistance, tailgateDistance);
