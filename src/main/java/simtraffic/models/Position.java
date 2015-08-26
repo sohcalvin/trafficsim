@@ -197,17 +197,20 @@ public final class Position {
 	    return null;
 	    
 	}
-
-	private boolean isLeftLaneClear(Behaviour behaviour ){
-	    if(rowInSegment <= 0) return false; // No left lanes
+	// returns null if Position not clear or not available or out of bounds
+	private Position getClearPositionLeft(Behaviour behaviour ){
+	    if(rowInSegment <= 0) return null; // No left lanes
 	    Position leftLanePosition = new Position(segment, rowInSegment-1, columnInSegment);
-	    return leftLanePosition.canEnter(behaviour);
+	    if( leftLanePosition.canEnter(behaviour)) return leftLanePosition;
+	    return null;
 	}
-	private boolean isRightLaneClear(Behaviour behaviour ){
+	// returns null if Position not clear or not available or out of bounds
+	private Position getClearPositionRight(Behaviour behaviour ){
 	    int maxRowIndex = segment.getMaxRowIndex();
-	    if(rowInSegment >= maxRowIndex) return false; // No right lanes
+	    if(rowInSegment >= maxRowIndex) return null; // No right lanes
 	    Position rightLanePosition = new Position(segment, rowInSegment+1, columnInSegment);
-	    return rightLanePosition.canEnter(behaviour);
+	    if( rightLanePosition.canEnter(behaviour)) return rightLanePosition;
+	    return null;
 	}
 	private boolean canEnter(Behaviour behaviour){
 	    if(this.getVehicle() != null) return false; // Currently occupied
@@ -229,14 +232,17 @@ public final class Position {
 	    return false;
 	}
 	
-	public Position nextOptimumPosition(int requestedDistance, int tailgateDistance)throws RunningException{
+	public Position nextOptimumPosition(Behaviour behaviour)throws RunningException{
 	    Position current = this;
-	    Position currentLaneNextPosition = current.nextFurthestPositionAhead(requestedDistance, tailgateDistance);
-	    if(currentLaneNextPosition == null ) return null;
-	    if(currentLaneNextPosition.distanceApart(current) < requestedDistance){
-		    //Position anotherLane = current.getSegment().
-	    }
-	    return currentLaneNextPosition;
+	    Position left = this.getClearPositionLeft(behaviour);
+	    Position right = this.getClearPositionRight(behaviour);
+	    
+	    
+	    
+	    //Position currentLaneNextPosition = current.nextFurthestPositionAhead(requestedDistance, tailgateDistance);
+	   // if(currentLaneNextPosition == null ) return null;
+	 
+	    return null;
 		
 	    
 	    
