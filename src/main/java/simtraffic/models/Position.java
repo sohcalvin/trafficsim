@@ -161,12 +161,23 @@ public final class Position {
 	}
 	
 	// null if no more position
-	public Position nextFurthestPositionAhead(int requestedDistance, int tailgateDistance){
-	    int i =0;
+	public Position nextFurthestPositionAhead(Behaviour behaviour){
+		Position bestPosition = this;
+		try{ 
+			bestPosition = this.getBestStartPosition(behaviour);
+		}catch(RunningException re){
+			re.printStackTrace();
+			return null;
+		}
+		
+		int requestedDistance = behaviour.getPreferredSpeed();
+		int tailgateDistance = behaviour.getTailgateDistance();
+
+		int i =0;
 	    Position furthestEmptyPosition = null;
-	    Position nextPosition = this;
+	    Position nextPosition = bestPosition;
 	    
-	    Range rangeAhead = this.distanceOfVehicleAhead();
+	    Range rangeAhead = bestPosition.distanceOfVehicleAhead();
 	    int distanceAhead = rangeAhead.getDistance();
 	    int endType = rangeAhead.getEndType();
 	    int maxForwardDistance = distanceAhead;
@@ -189,7 +200,7 @@ public final class Position {
 	    	return null;
 	    }
 	    try{
-	    	Position newPosition = this.roll(requestedDistance);
+	    	Position newPosition = bestPosition.roll(requestedDistance);
 	    	return newPosition;
 	    }catch(RunningException re){
 	    	re.printStackTrace(); // this shouldn't happen
@@ -232,20 +243,22 @@ public final class Position {
 	    return false;
 	}
 	
-	public Position nextOptimumPosition(Behaviour behaviour)throws RunningException{
-	    Position current = this;
+	public Position getBestStartPosition(Behaviour behaviour)throws RunningException{
+	    Position chosen = this;
 	    Position left = this.getClearPositionLeft(behaviour);
 	    Position right = this.getClearPositionRight(behaviour);
 	    
-	    
-	    
-	    //Position currentLaneNextPosition = current.nextFurthestPositionAhead(requestedDistance, tailgateDistance);
-	   // if(currentLaneNextPosition == null ) return null;
-	 
-	    return null;
-		
-	    
-	    
+	    Range chosenRange = chosen.distanceOfVehicleAhead();
+	    if(left != null){
+	    	Range leftRange = left.distanceOfVehicleAhead();
+	    	if(chosenRange.compareTo(leftRange) < 0 ) chosen = left;
+	    }
+	    chosenRange = chosen.distanceOfVehicleAhead();
+	    if(right != null){
+	    	Range rightRange = right.distanceOfVehicleAhead();
+	    	if(chosenRange.compareTo(rightRange) < 0 ) chosen = right;
+	    }
+	    return chosen;
 	}
 	
 	
@@ -272,10 +285,10 @@ public final class Position {
 	
 
 	
-	private class Range{
-		public static final int END_CLEAR = -1;   // Clear position after this range
-		public static final int END_NULL = -2;     // End of road(null position) after this range
-		public static final int END_VEHICLE = -3; // Vehicle exisit right after this range
+	private class Range implements Comparable<Range>{
+		public static final int END_CLEAR = 1;   // Clear position after this range
+		public static final int END_NULL = 2;     // End of road(null position) after this range
+		public static final int END_VEHICLE = 3; // Vehicle exisit right after this range
 			
 		private int distance;
 		private int endType;
@@ -293,6 +306,13 @@ public final class Position {
 		}
 		public int getEndType() {
 			return endType;
+		}
+		@Override
+		public int compareTo(Range r) {
+			if(r == null) return 1;
+			if(this.endType == END_CLEAR || this.endType == END_NULL) return 1;
+			if(r.endType == END_CLEAR || r.endType == END_NULL) return -1;
+			return this.distance - r.distance;
 		}
 	}
 	

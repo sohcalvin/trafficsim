@@ -17,7 +17,7 @@ public class RoadNetwork {
 	// Initializing road segments
 	int segLength1 = 30;
 	int segLength2 = 30;
-	Segment seg1 = new Segment(1, 2, segLength1, 1, 20);
+	Segment seg1 = new Segment(1, 3, segLength1, 1, 20);
 	Segment seg2 = new Segment(2, 3, segLength2, 1 + segLength1, 20);
 
 	seg2.setSegmentBeforeThis(seg1); // seg1-->seg2

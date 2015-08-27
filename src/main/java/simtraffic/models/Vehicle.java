@@ -1,9 +1,12 @@
 package simtraffic.models;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
+
+import org.bson.Document;
 
 public class Vehicle {
 	private long id;
@@ -13,7 +16,7 @@ public class Vehicle {
 	private Position position = null;
 	//private ArrayList<Integer> timeCount = new ArrayList<Integer>();
 	//private ArrayList<Position> journey = new ArrayList<Position>();
-	private SortedMap<Integer,Position> journey = new TreeMap<Integer,Position>();
+	private TreeMap<Integer,Position> journey = new TreeMap<Integer,Position>();
 
 	
 	
@@ -54,14 +57,10 @@ public class Vehicle {
 	}
 	public Position getNextPreferredPosition(){
 	    if(position == null){
-		return null;
+	    	return null;
 	    }
-	    int preferredSpeed = behaviour.getPreferredSpeed();
-	    int tailgateDistance = behaviour.getTailgateDistance();
-
-	    Position availablePosition =  position.nextFurthestPositionAhead(preferredSpeed,tailgateDistance);
+	    Position availablePosition =  position.nextFurthestPositionAhead(behaviour);
 	    return availablePosition;
-
 	}
 	
 	public void setRoute(Route route) throws ConfigurationException {
@@ -104,6 +103,29 @@ public class Vehicle {
 		
 		
 	}
+	public void generateJson(){
+		int tFrom = 0;
+		int tTo = 20;
+		
+		Position prevPosition = null;
+		for(int i= tFrom ; i <= tTo ; i++){
+				Position p = journey.get(i);
+				if(p == null){
+					if(prevPosition == null){
+						Map.Entry<Integer, Position> ceil = journey.ceilingEntry(i);
+						p=ceil.getValue();
+					}else{
+						p = prevPosition;
+					}
+				}else{
+					prevPosition = p;
+				}
+				System.out.println("t=" + i + p);
+				
+		}
+						
+	}
+	
 
 
 }

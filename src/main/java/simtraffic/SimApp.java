@@ -67,6 +67,12 @@ public class SimApp {
 			System.out.println("After loop " + t);
 			System.out.println(route);
 		}
+		
+		for(Vehicle v : allVehicles){
+			System.out.println("-------- " + v);
+			v.generateJson();
+		}
+		
 	//	writeToMongo(allVehicles);
 	//	generateSimData();
 			
