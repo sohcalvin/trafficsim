@@ -53,13 +53,14 @@ public class SimApp {
 		Route route = roadNetwork.makeRoute(new int[]{1,2});
 		
 		// Instantiates and queues vehicles to enter routes
+		addVehicles(30,Behaviour.NORMAL, route);
 		addVehicles(1,Behaviour.RELAX, route);
-		//addVehicles(2,Behaviour.NORMAL, route);
+		addVehicles(2,Behaviour.NORMAL, route);
 		addVehicles(1,Behaviour.RUSH, route);
 		addVehicles(1,Behaviour.RELAX, route);
 		addVehicles(1,Behaviour.RUSH, route);
 				
-		int timeLoop = 60;  // time loops
+		int timeLoop = 100;  // time loops
 		for(int t =0 ; t < timeLoop ; t++){
 		    	ArrayList<Segment> segments =  route.getSegments();
 			int maxIdx = segments.size()-1;
@@ -72,6 +73,7 @@ public class SimApp {
 		
 		PrintStream ps = new PrintStream( new File("./src/main/server/www-root/resources/simit.json"));
 		writeOut(ps);
+		ps.close();
 		
 	//	writeToMongo(allVehicles);
 	//	generateSimData();
@@ -81,7 +83,7 @@ public class SimApp {
 		out.println("[");
 		int num = allVehicles.size();
 		int tFrom =0;
-		int tTo = 60;
+		int tTo = 1000;
 		for(Vehicle v : allVehicles){
 			v.print(out,tFrom, tTo);
 			if(--num > 0) out.println(",");

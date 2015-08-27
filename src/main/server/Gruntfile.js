@@ -7,10 +7,10 @@ module.exports = function(grunt) {
 		connect: {
 			dev: {
 				options: {
-					base: ".",
+					base: "./www-root",
 					keepalive: "true",
 					hostname: "localhost",
-					port: 9080
+					port: 3000
 				}
 			}
 		},

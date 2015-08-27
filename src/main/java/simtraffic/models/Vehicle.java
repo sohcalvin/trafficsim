@@ -15,8 +15,6 @@ public class Vehicle {
 	
 	private Route route = null;
 	private Position position = null;
-	//private ArrayList<Integer> timeCount = new ArrayList<Integer>();
-	//private ArrayList<Position> journey = new ArrayList<Position>();
 	private TreeMap<Integer,Position> journey = new TreeMap<Integer,Position>();
 
 	
