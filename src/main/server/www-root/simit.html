@@ -1,0 +1,78 @@
+<html>
+<head>
+	<title>Lookup of D3</title>
+	<!-- <script src="http://d3js.org/d3.v3.min.js"></script> -->
+	<script src="javascripts/d3.v3.min.js"></script>
+		
+</head>
+<body>
+	<svg height="8" width="8" xmlns="http://www.w3.org/2000/svg" version="1.1">
+	  <defs>
+	    <pattern id="crosshatch" patternUnits="userSpaceOnUse" width="8" height="8">
+	      <image xlink:href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='8' height='8'><path fill='#fff' d='M0 0h8v8h-8z'/><path d='M0 0l8 8zm8 0l-8 8z' stroke-width='.5' stroke='#aaa'/></svg>" x="0" y="0" width="8" height="8">
+	      </image>
+	    </pattern>
+	  </defs>
+	</svg>
+
+	<script>
+		d3.json("resources/simit.json", function(error,data){
+			console.log(data);
+			simit(data);
+		});
+	function simit(simData){
+		var canvas = d3.select("body")
+					.append("svg")
+					.attr("style", "outline: thin solid red;") // Give it a border
+					.attr("width",800)
+					.attr("height",2500);
+		var carWidth = 2;
+		var carHeight = 1;
+		      
+			canvas.selectAll("rect")
+			.data(simData)
+			.enter()
+			.append("rect")
+			.attr("width", carWidth).attr("height", carHeight)
+			.attr("x",0).attr("y",50)
+		 	.transition()
+			  .duration(5000)
+			  .delay(0)
+			  .tween("transform", function (d, i, a) { 
+			       console.log("d=" + d); 
+			       console.log("i=" + i); 
+			       console.log("a=" + a);
+			       var positions =d;
+			       var steps = d3.range(positions.length)   // returns an array min/max = 0/1 with num elements = positions.length
+			                   .map(
+			                     d3.scale.linear()
+			                       .domain([0, positions.length - 1])
+			                       .range([0, 1])
+			               		);
+					var o = d3.scale.linear()
+							.domain(steps)
+							.range(positions);
+			       
+			       return function(t){
+			    	   var xpos = o(t).x;
+			    	   var ypos = o(t).y;
+			    	  //this.style.width(xpos);
+// 			    	   this.attr("x", xpos);
+// 			    	   this.attr("y", ypos);
+			    	   this.style.x =xpos;
+			    	   this.style.y =ypos;
+			    	   
+			    	   //console.log(t+":" + xpos);
+			    	 //  return "translate(" + [xpos, ypos] + ")";
+			       }
+			       //return d3.interpolate(a, 400); 
+			  });
+	}
+	   
+
+			
+					
+
+	</script>
+</body>
+</html>

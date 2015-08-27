@@ -1,5 +1,7 @@
 package simtraffic;
-
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -45,7 +47,7 @@ public class SimApp {
 	 * @throws ConfigurationException
 	 * @throws RunningException
 	 */
-	public static void main(String[] args) throws InterruptedException, ConfigurationException, RunningException {
+	public static void main(String[] args) throws InterruptedException, ConfigurationException, RunningException,FileNotFoundException {
 			
 		RoadNetwork roadNetwork = RoadNetwork.getInstance();
 		Route route = roadNetwork.makeRoute(new int[]{1,2});
@@ -68,15 +70,27 @@ public class SimApp {
 			System.out.println(route);
 		}
 		
-		for(Vehicle v : allVehicles){
-			System.out.println("-------- " + v);
-			v.generateJson();
-		}
+		PrintStream ps = new PrintStream( new File("./src/main/server/www-root/resources/simit.json"));
+		writeOut(ps);
 		
 	//	writeToMongo(allVehicles);
 	//	generateSimData();
 			
 	}
+	private static void writeOut(PrintStream out){
+		out.println("[");
+		int num = allVehicles.size();
+		int tFrom =0;
+		int tTo = 60;
+		for(Vehicle v : allVehicles){
+			v.print(out,tFrom, tTo);
+			if(--num > 0) out.println(",");
+			else out.println("");
+		}
+		out.println("]");
+	}
+	
+	
 	private static void addVehicles(int number, Behaviour behaviour, Route route) throws ConfigurationException{
 	    VehicleFactory vehicleFactory = VehicleFactory.getInstance();
 	    for (int i = 0; i < number; i++) {

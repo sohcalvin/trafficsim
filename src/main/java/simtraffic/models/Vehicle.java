@@ -1,5 +1,6 @@
 package simtraffic.models;
 
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -103,12 +104,11 @@ public class Vehicle {
 		
 		
 	}
-	public void generateJson(){
-		int tFrom = 0;
-		int tTo = 20;
-		
+	public void print(PrintStream out, int tFrom, int tTo){
+
 		Position prevPosition = null;
 		for(int i= tFrom ; i <= tTo ; i++){
+				if(i==tFrom) out.print("[");
 				Position p = journey.get(i);
 				if(p == null){
 					if(prevPosition == null){
@@ -120,10 +120,12 @@ public class Vehicle {
 				}else{
 					prevPosition = p;
 				}
-				System.out.println("t=" + i + p);
+				out.print(p);
+				if(i < tTo) out.print(",");
+				else out.print("]");
 				
 		}
-						
+					
 	}
 	
 
